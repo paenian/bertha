@@ -1,6 +1,7 @@
 %translate([0,0,-.05]) cube([200,200,.1],center=true);
 
-radius = 45;
+radius = 48;
+fudge=4;
 
 ext_x = 20;
 ext_y = 60;
@@ -23,11 +24,15 @@ inner = ext_x+wall;
 for(i=[0:3])
   %translate([0,radius*cos(30),height/2]) rotate([90,0,0]) rotate([0,0,90*i]) translate([31/2,31/2,0]) cylinder(r=1.8, h=20, $fn=18, center=true);
 
-rounding = 5;
+rounding = 10;
 
 
-translate([100,0,0]) lower_bracket();
+%translate([-65/2,-84/2+4,0]) cube([65,84,50]);
+
+lower_bracket();
 //rounding();
+
+$fn=32;
 
 module rounding(){
   minkowski(){
@@ -41,17 +46,16 @@ module rounding(){
   }
 }
 
-
 module lower_bracket(){
   difference(){
     minkowski(){
       difference() {
-        translate([0,0,rounding]) cylinder(r=radius-rounding,h=height-rounding*2,$fn=6);
-        translate([0,rounding-radius,height/2]) rotate([0,90,0]) cylinder(r=radius/2.5,h=height,$fn=32, center=true);
-        //for(j=[0,height])
-          //for(i=[-1,1]) translate([i*radius,0,j]) rotate([0,-90*i,0]) rotate([60,0,0]) cylinder(r=radius/2.5,h=height-wall,$fn=32, center=true);
+        translate([0,fudge,0]) cylinder(r=radius-rounding,h=height-rounding,$fn=6);
       }
-      sphere(r=rounding);
+		intersection(){
+      		sphere(r=rounding);
+			translate([0,0,rounding]) cube([rounding*2, rounding*2, rounding*2],center=true);
+		}
     }
 
     //cut out outer wings
@@ -64,8 +68,12 @@ module lower_bracket(){
 
     //cut out motor hole
     intersection(){
-      translate([0,0,-.1]) cylinder(r=radius-wall,h=height+1,$fn=6);
-      translate([0,(inner)*cos(30)+wall,-.1]) cylinder(r=inner,h=height+1,$fn=6);
+      translate([0,fudge,-.1]) cylinder(r=radius-wall,h=height+1,$fn=6);
+		union(){
+      		translate([0,(inner)*cos(30)+wall,-.1]) cylinder(r=inner,h=height+1,$fn=6);
+			for(i=[-1,1])
+				translate([0,(inner)*cos(30)+wall,-.1]) rotate([0,0,i*30+90]) translate([20,0,0]) cylinder(r=inner,h=height+1,$fn=6);
+		}
     }
     
     //and the motor mount
@@ -74,9 +82,9 @@ module lower_bracket(){
       translate([0,radius*cos(30),height/2]) rotate([90,0,0]) rotate([0,0,90*i]) translate([31/2,31/2,0]) cylinder(r=1.8, h=20, $fn=18, center=true);
 
     //cut out extrusion slots
-    translate([-ext_x/2, -ext_y,floor]) ext_slot(ext_y+1,1, 0, [1,0,1], [1,0,1]);
+    translate([-ext_x/2, -ext_y,floor]) ext_slot(ext_y+1,1, 0, [[1,0,1], [1,0,1]], [1,0,1]);
     for(i=[0:1]) mirror([i,0,0]) {
-      translate([ext_x/2+wall,0,floor]) rotate([0,0,-30]) ext_slot(ext_y+1, 0, ext_y, [1,0,1], [0, 1, 0]);
+      translate([ext_x/2+wall,0,floor]) rotate([0,0,-30]) ext_slot(ext_y+1, 1, ext_y, [[1,0,1], [0, 1, 0]], [0, 1, 0]);
       translate([ext_x/2+wall,0,-.1]) rotate([0,0,-30]) translate([ext_x-.1, -ext_y/2,0]) cube([ext_x, ext_y, height+1]);
     }
 
@@ -110,9 +118,9 @@ module ext_slot(height=ext_y, rows=0, head_len=ext_x+wall, holes_x=[0,0,0], hole
           translate([ext_x/2,k,ext_x/2+i*(ext_y/3)]) rotate([90,0,0]) cylinder(r=bolt_dia, h=head_len, $fn=16);
       }
 
-      if(holes_x[i] == 1){
         //side
-        for(j=[0:rows])
+      for(j=[0:rows]){
+		  if(holes_x[j][i])
           translate([-wall-.1,ext_x/2+j*(ext_y/3),ext_x/2+i*(ext_y/3)]) rotate([0,90,0]) cylinder(r=bolt_rad, h=ext_x+wall+wall+.2, $fn=8);
       }
     }
