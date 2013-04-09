@@ -1,3 +1,5 @@
+include <configuration.scad>;
+
 %translate([0,0,-.05]) cube([200,200,.1],center=true);
 
 radius = 48;
@@ -5,30 +7,24 @@ fudge=4;
 
 ext_x = 20;
 ext_y = 60;
-wall = 5;
+
 
 height = ext_y;
-
-bolt_slop = .2;
-bolt_dia = 5+bolt_slop;
-bolt_rad = bolt_dia/2;
-bolt_cap_dia = 8.5+bolt_slop;
-bolt_cap_rad = bolt_cap_dia/2;
-nut_dia = 8.8+bolt_slop;
-nut_rad = nut_dia/2;
 
 inner = ext_x+wall;
 rounding = 10;
 
+$fn=32;
+
 //idler for printing
 //bracket(motor=false);
 //translate([0,-15,0])
-idler();
+//idler();
 
 //motor
-//bracket(motor=true);
+bracket(motor=true);
 
-$fn=32;
+
 
 module bracket(motor = true){
   difference(){
