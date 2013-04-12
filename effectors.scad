@@ -28,10 +28,7 @@ module rail_effector(){
 			for(i=[0,1]) mirror([0,i,0]) translate([8,(rail_width/2+v_rad+8)/sqrt(3),0]) belt_mount(1);
 
 			//connect everything up
-			difference(){
-				cylinder(r=body_rad/cos(60), h=wall, $fn=6);
-				for(i=[0:60:359]) rotate([0,0,i]) translate([0,(body_rad-wall)/cos(60)-2*wall,-.1]) rotate([0,0,30]) cylinder(r=wall/cos(60), h=wall+.2, $fn=3);
-			}
+			rail_body();
 		}
 
 		//holes for everything
@@ -48,10 +45,22 @@ module rail_effector(){
 	}
 }
 
+module rail_body(){
+	//difference(){
+	//	cylinder(r=body_rad/cos(60), h=wall, $fn=6);
+	//	for(i=[0:60:359]) rotate([0,0,i]) translate([0,(body_rad-wall)/cos(60)-2*wall,-.1]) rotate([0,0,30]) cylinder(r=wall/cos(60), h=wall+.2, $fn=3);
+	//}
+
+	//translate([7.3,0,0]) cylinder(r=rail_width/cos(30), h=wall*3, $fn=6);
+
+	//backbone
+	translate([0,0,wall/2]) cube([rail_width,arm_sep,wall],center=true);
+}
+
 module belt_mount(solid = 1){
 	if(solid){
-		cylinder(r=25/2, h=wall);
-		translate([0,0,wall]) cylinder(r1=25/2, r2=bolt_cap_rad, h=nut_height+1);
+		cylinder(r=v_rad, h=wall);
+		translate([0,0,wall]) cylinder(r1=v_rad, r2=bolt_cap_rad, h=nut_height+1);
 	}else{
 		translate([0,0,-.01]) cylinder(r=nut_rad, h=nut_height, $fn=6);
 		translate([0,0,nut_height+.3]) cylinder(r=bolt_rad, h=wall+1);
@@ -60,8 +69,8 @@ module belt_mount(solid = 1){
 
 module wheel_mount(solid = 1){
 	if(solid){
-		cylinder(r=25/2, h=wall);
-		translate([0,0,wall]) cylinder(r1=25/2, r2=8/2, h=10);
+		cylinder(r=v_rad, h=wall);
+		translate([0,0,wall]) cylinder(r1=v_rad, r2=8/2, h=10);
 	}else{
 		translate([0,0,-.01]) cylinder(r=nut_rad, h=nut_height, $fn=6);
 		translate([0,0,nut_height+.3]) cylinder(r=bolt_rad, h=20);

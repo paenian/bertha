@@ -83,9 +83,9 @@ module idler_mount(){
 
   //this is the channel for the idler slider
   translate([0,(radius+wall)*cos(30)-wall,0]){
-    translate([0,0,height/2-wall*2]) cylinder(r=20, h=height,center=true, $fn=4);
-    translate([0,0,height]) cylinder(r=5.22, h=wall*2,center=true);
-    translate([0,0,height-wall+.3]) cylinder(r=bolt_rad, h=wall*2,center=true);
+    translate([0,0,height/2-wall-wall/2]) cylinder(r=20, h=height,center=true, $fn=4);
+    translate([0,0,height+wall/2]) cylinder(r=5.22, h=wall*2,center=true);
+    translate([0,0,height-wall/2+.3]) cylinder(r=bolt_rad, h=wall*2,center=true);
   }
 }
 
@@ -152,13 +152,13 @@ module ext_slot(height=ext_y, rows=0, head_len=ext_x+wall, holes_x=[0,0,0], hole
     for(i=[0:2]){
       if(holes_z[i] >= 1){
         //top/bottom
-        translate([ext_x/2,ext_x/2+i*(ext_y/3),-wall]) cylinder(r=bolt_rad, h=height+wall+wall, $fn=8);
+        translate([ext_x/2,ext_x/2+i*(ext_y/3),-wall]) cylinder(r=bolt_rad, h=radius*3, center=true, $fn=8);
         for(k=[-wall*2-ext_x,height+wall*2])
           translate([ext_x/2,ext_x/2+i*(ext_y/3),k]) cylinder(r=bolt_cap_rad, h=head_len, $fn=16);
       }
 
       if(holes_y[i] >= 1){
-        translate([ext_x/2,ext_y+wall+.1,ext_x/2+i*(ext_y/3)]) rotate([90,0,0]) cylinder(r=bolt_rad, h=height+wall+wall+.2, $fn=8);
+        translate([ext_x/2,ext_y+wall+.1,ext_x/2+i*(ext_y/3)]) rotate([90,0,0]) cylinder(r=bolt_rad, h=radius*3, center=true, $fn=8);
         for(k=[-.1-wall,ext_y+wall+head_len])
           translate([ext_x/2,k,ext_x/2+i*(ext_y/3)]) rotate([90,0,0]) cylinder(r=bolt_cap_rad, h=head_len, $fn=16);
       }
@@ -166,7 +166,7 @@ module ext_slot(height=ext_y, rows=0, head_len=ext_x+wall, holes_x=[0,0,0], hole
       //side
       for(j=[0:rows]){
 		  if(holes_x[j][i] >= 1){
-          translate([-wall-.1,ext_x/2+j*(ext_y/3),ext_x/2+i*(ext_y/3)]) rotate([0,90,0]) cylinder(r=bolt_rad, h=ext_x+wall+wall+.2, $fn=8);
+          translate([-wall-.1,ext_x/2+j*(ext_y/3),ext_x/2+i*(ext_y/3)]) rotate([0,90,0]) cylinder(r=bolt_rad, h=radius*3, center=true, $fn=8);
           for(k=[-wall-holes_x[j][i],ext_x+wall])
           translate([k,ext_x/2+j*(ext_y/3),ext_x/2+i*(ext_y/3)]) rotate([0,90,0]) cylinder(r=bolt_cap_rad, h=holes_x[j][i], $fn=16);
         }
