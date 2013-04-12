@@ -4,17 +4,68 @@ rail_width=25.4649;
 v_rad = 9.77;
 arm_sep = 60;
 
-body_rad=20;
+rod_end_thickness = 8;
 
 //%cube([rail_width,100,wall],center=true);
 
 radius=36;
-//%cylinder(r=radius, h=1, $fn=6);
+//%cylinder(r=30, h=1);
 
-rail_effector();
+//rail_effector();
 //adjustable_wheel();
 
+hotend_effector();
+
 module hotend_effector(){
+	difference(){
+		union(){
+			//body
+			biohazard(1);
+
+			//arms
+			for(i=[0:120:359]) rotate([0,0,i]){
+				translate([0,radius,0]) arm_mounts_outer(1);
+			}
+
+			//extruder mounts
+			for(i=[0:120:359]) rotate([0,0,i]){
+				translate([0,20,0]) extruder_mount(1);
+			}
+		}
+
+		//arms
+		for(i=[0:120:359]) rotate([0,0,i]){
+			translate([0,radius,0]) arm_mounts_outer(0);
+		}
+
+		//extruder mounts
+		for(i=[0:120:359]) rotate([0,0,i]){
+			translate([0,20,0]) extruder_mount(0);
+		}
+	}
+}
+
+module extruder_mount(solid = 1){
+	if(solid){
+		cylinder(r=10+wall, h=50);
+	}else{
+		translate([0,0,-.1]) cylinder(r=10, h=51);
+	}
+}
+
+bio_rad = 96;
+module biohazard(){
+	difference(){
+		for(i=[0:120:359]) rotate([0,0,i]){
+			intersection(){
+				translate([0,bio_rad,0]) cylinder(r=bio_rad, h=wall*2, $fn=64);
+				cylinder(r=62, h=wall*2, $fn=64);
+			}
+		}
+		for(i=[0:120:359]) rotate([0,0,i]){
+			translate([0,bio_rad+wall*3,-.1]) cylinder(r=bio_rad-wall, h=wall*2+.2, $fn=64);
+		}
+	}
 }
 
 module rail_effector(){
@@ -152,12 +203,12 @@ module arm_mounts(solid = 1){
 //	%cube([arm_sep,1,30], center=true);
 	translate([0,0,wall]) rotate([0,90,0])
 	if(solid){
-		cylinder(r=arm_rad, h=arm_sep-wall*2, center=true);
-		for(i=[0,1]) mirror([0,0,i]) translate([0,0,arm_sep/2-wall]) cylinder(r1=arm_rad, r2=bolt_cap_rad, h=wall);
+		cylinder(r=arm_rad, h=arm_sep-wall*4, center=true);
+		for(i=[0,1]) mirror([0,0,i]) translate([0,0,arm_sep/2-wall*2]) cylinder(r1=arm_rad, r2=bolt_cap_rad, h=wall*2);
 	}else{
 		//nut slot
-		translate([0,0,-.01]) cylinder(r=nut_rad, h=arm_sep-wall*5, center=true, $fn=6);
-		translate([nut_rad,0,-.01]) cylinder(r=nut_rad, h=arm_sep-wall*5, center=true, $fn=6);
+		translate([0,0,-.01]) cylinder(r=nut_rad, h=arm_sep-wall*4, center=true, $fn=6);
+		translate([nut_rad,0,-.01]) cylinder(r=nut_rad, h=arm_sep-wall*4, center=true, $fn=6);
 		cylinder(r=bolt_rad, h=arm_sep+wall, center=true);
 
 		//flatten the bottom
@@ -165,5 +216,25 @@ module arm_mounts(solid = 1){
 
 		//cut out for the rail itself
 		//translate([-arm_rad,0,0]) rotate([90,0,0]) scale([wall/rail_width,1,1]) cylinder(r=rail_width, h=arm_rad*2-2, center=true);
+	}
+}
+
+module arm_mounts_outer(solid = 1){
+//	%cube([arm_sep,1,30], center=true);
+	translate([0,0,wall]) rotate([0,90,0])
+	if(solid){
+		for(i=[0,1]) mirror([0,0,i]) translate([0,0,arm_sep/2+rod_end_thickness]){
+			cylinder(r2=arm_rad, r1=bolt_cap_rad, h=wall*2);
+			translate([0,0,wall*2]) sphere(r=arm_rad);
+		}
+
+	}else{
+		for(i=[0,1]) mirror([0,0,i]) translate([0,0,arm_sep/2+rod_end_thickness]){
+			translate([0,0,-.1]) cylinder(r=bolt_rad, h=wall*3);
+			translate([0,0,wall+arm_rad]) cylinder(r=nut_rad, h=wall*3, $fn=6);
+		}
+
+		//flatten the bottom
+		translate([wall+10,0,0]) cube([20,25,arm_sep*2],center=true);
 	}
 }
