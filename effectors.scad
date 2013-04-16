@@ -4,12 +4,15 @@ rail_width=25.4649;
 v_rad = 9.77;
 arm_sep = 60;
 
+hotend_rad = 12;
+
+
 rod_end_thickness = 8;
 
 //%cube([rail_width,100,wall],center=true);
 
 radius=36;
-//%cylinder(r=30, h=1);
+%cylinder(r=30, h=40);
 
 //rail_effector();
 //adjustable_wheel();
@@ -20,7 +23,9 @@ module hotend_effector(){
 	difference(){
 		union(){
 			//body
-			biohazard(1);
+			//biohazard(1);
+
+			hexamid();
 
 			//arms
 			for(i=[0:120:359]) rotate([0,0,i]){
@@ -29,7 +34,7 @@ module hotend_effector(){
 
 			//extruder mounts
 			for(i=[0:120:359]) rotate([0,0,i]){
-				translate([0,20,0]) extruder_mount(1);
+				//translate([0,16.666,25]) extruder_mount(1);
 			}
 		}
 
@@ -40,16 +45,33 @@ module hotend_effector(){
 
 		//extruder mounts
 		for(i=[0:120:359]) rotate([0,0,i]){
-			translate([0,20,0]) extruder_mount(0);
+			translate([0,16.666,25]) extruder_mount(0);
 		}
+	}
+}
+
+body_rad = 60;
+center_rad = 36;
+height = 50;
+module hexamid(){
+	difference(){
+		union(){
+			rotate([0,0,30]) cylinder(r1=body_rad/cos(180/6), r2=center_rad/cos(180/6), h=height, $fn=6);
+		}
+
+		for(i=[90:120:359]){
+			rotate([0,0,i]) translate([body_rad/cos(180/6)+wall*1.5,0,-.1]) rotate([0,0,180/12]) cylinder(r=body_rad/cos(180/12), h=height+2, $fn=12);
+		}
+
+		translate([0,0,-wall]) rotate([0,0,-30]) cylinder(r1=body_rad/cos(180/3), r2=0, height, $fn=3);
 	}
 }
 
 module extruder_mount(solid = 1){
 	if(solid){
-		cylinder(r=10+wall, h=50);
+		translate([-65/2,-wall,0]) cube([65,wall*2,30]);
 	}else{
-		translate([0,0,-.1]) cylinder(r=10, h=51);
+		translate([0,wall,.3]) cylinder(r=hotend_rad, h=90, center=true);
 	}
 }
 
