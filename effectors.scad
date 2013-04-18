@@ -12,12 +12,14 @@ rod_end_thickness = 8;
 //%cube([rail_width,100,wall],center=true);
 
 radius=36;
-%cylinder(r=30, h=40);
+//cylinder(r=30, h=40);
 
 //rail_effector();
 //adjustable_wheel();
 
 hotend_effector();
+
+translate([0,30,30]) extruder_bracket();
 
 module hotend_effector(){
 	difference(){
@@ -34,7 +36,7 @@ module hotend_effector(){
 
 			//extruder mounts
 			for(i=[0:120:359]) rotate([0,0,i]){
-				//translate([0,16.666,25]) extruder_mount(1);
+				translate([0,16.666,26]) extruder_mount(1);
 			}
 		}
 
@@ -45,7 +47,7 @@ module hotend_effector(){
 
 		//extruder mounts
 		for(i=[0:120:359]) rotate([0,0,i]){
-			translate([0,16.666,25]) extruder_mount(0);
+			translate([0,17.666,26]) extruder_mount(0);
 		}
 	}
 }
@@ -56,7 +58,7 @@ height = 50;
 module hexamid(){
 	difference(){
 		union(){
-			rotate([0,0,30]) cylinder(r1=body_rad/cos(180/6), r2=center_rad/cos(180/6), h=height, $fn=6);
+			rotate([0,0,30]) cylinder(r1=body_rad/cos(180/6), r2=center_rad/cos(180/6), h=height-wall, $fn=6);
 		}
 
 		for(i=[90:120:359]){
@@ -64,14 +66,50 @@ module hexamid(){
 		}
 
 		translate([0,0,-wall]) rotate([0,0,-30]) cylinder(r1=body_rad/cos(180/3), r2=0, height, $fn=3);
+
+		rotate([0,0,30]) cylinder(r=center_rad/2-wall/2, h=100, $fn=3);
 	}
 }
 
+mount_height = 30;
+mount_width = 48;
+
 module extruder_mount(solid = 1){
 	if(solid){
-		translate([-65/2,-wall,0]) cube([65,wall*2,30]);
+		translate([-mount_width/2,-wall,0]) cube([mount_width,wall*2,mount_height]);
 	}else{
-		translate([0,wall,.3]) cylinder(r=hotend_rad, h=90, center=true);
+		union(){
+			//hotend hole
+			translate([0,wall,.3]) cylinder(r=hotend_rad, h=mount_height);
+		
+			//bolt slots
+			render() for(i=[0,1]) mirror([i,0,0]){
+				translate([hotend_rad+bolt_dia,0,mount_height/2]) rotate([-90,0,0]) cylinder(r=bolt_rad, h=wall*2, center=true);
+				translate([hotend_rad+bolt_dia,0,mount_height]) rotate([-90,0,0]) cylinder(r=bolt_rad, h=wall*2, center=true);
+				translate([hotend_rad+bolt_rad,-wall*2/2,mount_height/2]) cube([bolt_dia,wall*2+.02,mount_height/2]);
+			
+				translate([hotend_rad+bolt_dia,0,mount_height]) cube([nut_dia,nut_height+.2,mount_height+nut_dia], center=true);
+			}
+		}
+	}
+}
+
+bracket_height = 20;
+
+//holds the extruder on
+module extruder_bracket(){
+	difference(){
+		union(){
+			translate([0,0,bracket_height/2]) cube([mount_width,wall*2, bracket_height], center=true);
+		}
+			
+		//hotend hole
+		translate([0,wall,.3]) cylinder(r=hotend_rad, h=mount_height);
+		
+		//bolt slots
+		render() for(i=[0,1]) mirror([i,0,0]){
+			translate([hotend_rad+bolt_dia,0,bracket_height/2]) rotate([-90,0,0]) cylinder(r=bolt_rad, h=wall*2+1, center=true);
+			}
 	}
 }
 
