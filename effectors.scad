@@ -4,51 +4,45 @@ rail_width=25.4649;
 v_rad = 9.77;
 arm_sep = 60;
 
-hotend_rad = 12;
-
+hotend_rad = 8;
+hotend_groove_rad=6;
 
 rod_end_thickness = 8;
 
-//%cube([rail_width,100,wall],center=true);
+//%translate([0,0,65]) cube([40,40,10],center=true);
 
 radius=36;
-//cylinder(r=30, h=40);
+//%translate([0,22.5,0]) cylinder(r=hotend_rad, h=50);
+
 
 //rail_effector();
 //adjustable_wheel();
-
-hotend_effector();
-
-translate([0,30,30]) extruder_bracket();
+//hotend_effector();
+//translate([0,30,30])
+extruder_bracket();
 
 module hotend_effector(){
 	difference(){
 		union(){
 			//body
-			//biohazard(1);
-
 			hexamid();
 
 			//arms
-			for(i=[0:120:359]) rotate([0,0,i]){
+			for(i=[0:120:359]) rotate([0,0,i])
 				translate([0,radius,0]) arm_mounts_outer(1);
-			}
 
 			//extruder mounts
-			for(i=[0:120:359]) rotate([0,0,i]){
-				translate([0,16.666,26]) extruder_mount(1);
-			}
+			for(i=[0:120:359]) rotate([0,0,i])
+				translate([0,16.5,30]) extruder_mount(1);
 		}
 
 		//arms
-		for(i=[0:120:359]) rotate([0,0,i]){
+		for(i=[0:120:359]) rotate([0,0,i])
 			translate([0,radius,0]) arm_mounts_outer(0);
-		}
 
 		//extruder mounts
-		for(i=[0:120:359]) rotate([0,0,i]){
-			translate([0,17.666,26]) extruder_mount(0);
-		}
+		for(i=[0:120:359]) rotate([0,0,i])
+			translate([0,17.5,30]) extruder_mount(0);
 	}
 }
 
@@ -67,11 +61,11 @@ module hexamid(){
 
 		translate([0,0,-wall]) rotate([0,0,-30]) cylinder(r1=body_rad/cos(180/3), r2=0, height, $fn=3);
 
-		rotate([0,0,30]) cylinder(r=center_rad/2-wall/2, h=100, $fn=3);
+		rotate([0,0,30]) cylinder(r=center_rad/2+wall, h=100, $fn=3);
 	}
 }
 
-mount_height = 30;
+mount_height = 15;
 mount_width = 48;
 
 module extruder_mount(solid = 1){
@@ -81,35 +75,53 @@ module extruder_mount(solid = 1){
 		union(){
 			//hotend hole
 			translate([0,wall,.3]) cylinder(r=hotend_rad, h=mount_height);
-		
+
 			//bolt slots
 			render() for(i=[0,1]) mirror([i,0,0]){
-				translate([hotend_rad+bolt_dia,0,mount_height/2]) rotate([-90,0,0]) cylinder(r=bolt_rad, h=wall*2, center=true);
-				translate([hotend_rad+bolt_dia,0,mount_height]) rotate([-90,0,0]) cylinder(r=bolt_rad, h=wall*2, center=true);
-				translate([hotend_rad+bolt_rad,-wall*2/2,mount_height/2]) cube([bolt_dia,wall*2+.02,mount_height/2]);
-			
-				translate([hotend_rad+bolt_dia,0,mount_height]) cube([nut_dia,nut_height+.2,mount_height+nut_dia], center=true);
+				translate([hotend_rad+bolt_dia,0,mount_height/2]) rotate([-90,0,0]) cylinder(r=bolt_rad, h=wall*3, center=true);
+				translate([hotend_rad+bolt_dia,-wall,mount_height/2]) rotate([-90,0,0]) cylinder(r=nut_rad, h=nut_height*2, center=true, $fn=6);
+
+				//translate([hotend_rad+bolt_dia,0,mount_height]) rotate([-90,0,0]) cylinder(r=bolt_rad, h=wall*2, center=true);
+				//translate([hotend_rad+bolt_rad,-wall*2/2,mount_height/2]) cube([bolt_dia,wall*2+.02,mount_height/2]);
+
+				//translate([hotend_rad+bolt_dia,0,mount_height]) cube([nut_dia,nut_height+.2,mount_height+nut_dia], center=true);
 			}
 		}
 	}
 }
 
 bracket_height = 20;
+bracket_thick = wall*3;
+
+pushfit_dia = 10;
+pushfit_rad = pushfit_dia/2;
+pushfit_thread_dia = 6;
+pushfit_thread_rad = pushfit_thread_dia/2;
 
 //holds the extruder on
 module extruder_bracket(){
 	difference(){
 		union(){
-			translate([0,0,bracket_height/2]) cube([mount_width,wall*2, bracket_height], center=true);
+			//hotend block
+			translate([0,0,bracket_thick/2]) cube([mount_width, bracket_height, bracket_thick], center=true);
+			//pushfit connector
+			translate([0,bracket_height/2,0]) {
+				translate([0,pushfit_rad/2,bracket_thick/2+.5]) cube([mount_width, pushfit_rad, bracket_thick+1], center=true);
+				translate([0,pushfit_rad/2,bracket_thick+1]) rotate([90,0,0]) cylinder(r=pushfit_rad+wall/2, h=pushfit_rad, center=true);
+			}
 		}
-			
+
+		//pushfit hole
+		translate([0,bracket_height/2,bracket_thick+1]) rotate([90,0,0]) cylinder(r=pushfit_rad, h=15, center=true);
+
 		//hotend hole
-		translate([0,wall,.3]) cylinder(r=hotend_rad, h=mount_height);
-		
-		//bolt slots
+		translate([0,0,bracket_thick+1]) rotate([90,0,0]) cylinder(r=hotend_rad, h=bracket_height, center=true);
+		translate([0,bracket_height/2,bracket_thick+1]) rotate([90,0,0]) cylinder(r=hotend_rad+1, h=.5);
+
+		//bolt holes
 		render() for(i=[0,1]) mirror([i,0,0]){
 			translate([hotend_rad+bolt_dia,0,bracket_height/2]) rotate([-90,0,0]) cylinder(r=bolt_rad, h=wall*2+1, center=true);
-			}
+		}
 	}
 }
 
@@ -134,14 +146,13 @@ module rail_effector(){
 			//v wheels
 			%translate([-rail_width/2-v_rad,0,0]) adjustable_wheel();
 			adjustable_wheel_mount(1);
-			
+
 			for(i=[0,1]) mirror([0,i,0]) translate([rail_width/2+v_rad,(rail_width+v_rad*2)/sqrt(3),0]) wheel_mount(1);
 
 			//arms
 			translate([0,radius-.5,0]) arm_mounts(1);
 
 			//belt mount
-			//-rail_width/2-v_rad-8;
 			for(i=[0,1]) mirror([0,i,0]) translate([8,(rail_width/2+v_rad+8)/sqrt(3),0]) belt_mount(1);
 
 			//connect everything up
@@ -158,7 +169,6 @@ module rail_effector(){
 		translate([0,radius-.5,0]) arm_mounts(0);
 
 		//belt mount
-		//-rail_width/2-v_rad-8;
 		for(i=[0,1]) mirror([0,i,0]) translate([8,(rail_width/2+v_rad+8)/sqrt(3),0]) belt_mount(0);
 	}
 }
@@ -182,22 +192,21 @@ module adjustable_wheel(){
 		}
 	}
 }
+
 gap = 2;
 module adjustable_wheel_mount(solid = 1){
 	if(solid){
 		//beef up the slot
-		//translate([wall,0,0])
 		intersection(){
 			translate([-radius/2-rail_width/2+gap+wall*2,0,wall]) rotate([0,90,0]) cylinder(r=v_rad/cos(45)+wall/cos(45), h=radius, center=true, $fn=4);
 			translate([-radius/2-rail_width/2+gap+wall*2,0,wall]) cube([radius, radius, wall*2],center=true);
 			cylinder(r=radius-rounding/cos(30), h=wall*2, $fn=6);
 		}
 		translate([-rail_width/2+gap-.02+wall+nut_height/2,0,wall+1-.1]) cube([nut_height,30,2],center=true);
-
 	}else{
 		//slot
 		translate([-radius/2-rail_width/2+gap/2,0,wall]) rotate([0,90,0]) cylinder(r=v_rad/cos(45), h=radius, center=true, $fn=4);
-	
+
 		//bolt holes
 		for(i=[0,1]) mirror([0,i,0]) {
 			translate([-rail_width/2+gap/2-.01,slider_offset,wall]) rotate([0,90,0]) cylinder(r=bolt_rad, h=wall*2);
@@ -210,15 +219,7 @@ module adjustable_wheel_mount(solid = 1){
 rounding = wall/2;
 
 module rail_body(){
-	//difference(){
-	//	cylinder(r=body_rad/cos(60), h=wall, $fn=6);
-	//	for(i=[0:60:359]) rotate([0,0,i]) translate([0,(body_rad-wall)/cos(60)-2*wall,-.1]) rotate([0,0,30]) cylinder(r=wall/cos(60), h=wall+.2, $fn=3);
-	//}
-
-	//translate([7.3,0,0]) cylinder(r=rail_width/cos(30), h=wall*3, $fn=6);
-
 	//backbone
-	//translate([0,0,wall/2]) cube([rail_width,arm_sep,wall],center=true);
 	minkowski(){
 		union(){
 			difference(){
@@ -260,7 +261,6 @@ module wheel_mount(solid = 1){
 arm_rad = wall*1.75;
 
 module arm_mounts(solid = 1){
-//	%cube([arm_sep,1,30], center=true);
 	translate([0,0,wall]) rotate([0,90,0])
 	if(solid){
 		cylinder(r=arm_rad, h=arm_sep-wall*4, center=true);
@@ -273,21 +273,16 @@ module arm_mounts(solid = 1){
 
 		//flatten the bottom
 		translate([wall+10,0,0]) cube([20,25,arm_sep],center=true);
-
-		//cut out for the rail itself
-		//translate([-arm_rad,0,0]) rotate([90,0,0]) scale([wall/rail_width,1,1]) cylinder(r=rail_width, h=arm_rad*2-2, center=true);
 	}
 }
 
 module arm_mounts_outer(solid = 1){
-//	%cube([arm_sep,1,30], center=true);
 	translate([0,0,wall]) rotate([0,90,0])
 	if(solid){
 		for(i=[0,1]) mirror([0,0,i]) translate([0,0,arm_sep/2+rod_end_thickness]){
 			cylinder(r2=arm_rad, r1=bolt_cap_rad, h=wall*2);
 			translate([0,0,wall*2]) sphere(r=arm_rad);
 		}
-
 	}else{
 		for(i=[0,1]) mirror([0,0,i]) translate([0,0,arm_sep/2+rod_end_thickness]){
 			translate([0,0,-.1]) cylinder(r=bolt_rad, h=wall*3);
