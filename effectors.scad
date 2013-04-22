@@ -9,7 +9,8 @@ hotend_groove_rad=6;
 
 rod_end_thickness = 8;
 
-//%translate([0,0,65]) cube([40,40,10],center=true);
+%translate([0,0,65]) cube([40,40,10],center=true);
+%translate([0,36,20]) cube([40,10,40],center=true);
 
 radius=36;
 //%translate([0,22.5,0]) cylinder(r=hotend_rad, h=50);
@@ -17,9 +18,9 @@ radius=36;
 
 //rail_effector();
 //adjustable_wheel();
-//hotend_effector();
-//translate([0,30,30])
-extruder_bracket();
+hotend_effector();
+//translate([0,33,25])
+//extruder_bracket();
 
 module hotend_effector(){
 	difference(){
@@ -91,22 +92,27 @@ module extruder_mount(solid = 1){
 }
 
 bracket_height = 20;
-bracket_thick = wall*3;
+bracket_thick = wall*2;
+bracket_width = mount_width-8;
 
 pushfit_dia = 10;
 pushfit_rad = pushfit_dia/2;
 pushfit_thread_dia = 6;
 pushfit_thread_rad = pushfit_thread_dia/2;
 
+groove_height = 2.5;
+groove_rad = 6;
+groove_top = 5;
+
 //holds the extruder on
 module extruder_bracket(){
 	difference(){
 		union(){
 			//hotend block
-			translate([0,0,bracket_thick/2]) cube([mount_width, bracket_height, bracket_thick], center=true);
+			translate([0,0,bracket_thick/2]) cube([bracket_width, bracket_height, bracket_thick], center=true);
 			//pushfit connector
 			translate([0,bracket_height/2,0]) {
-				translate([0,pushfit_rad/2,bracket_thick/2+.5]) cube([mount_width, pushfit_rad, bracket_thick+1], center=true);
+				translate([0,pushfit_rad/2,bracket_thick/2+.5]) cube([bracket_width, pushfit_rad, bracket_thick+1], center=true);
 				translate([0,pushfit_rad/2,bracket_thick+1]) rotate([90,0,0]) cylinder(r=pushfit_rad+wall/2, h=pushfit_rad, center=true);
 			}
 		}
@@ -115,12 +121,22 @@ module extruder_bracket(){
 		translate([0,bracket_height/2,bracket_thick+1]) rotate([90,0,0]) cylinder(r=pushfit_rad, h=15, center=true);
 
 		//hotend hole
-		translate([0,0,bracket_thick+1]) rotate([90,0,0]) cylinder(r=hotend_rad, h=bracket_height, center=true);
+		difference(){
+			translate([0,0,bracket_thick+1]) rotate([90,0,0]) cylinder(r=hotend_rad, h=bracket_height, center=true);
+			//groove slot
+			translate([0,bracket_height/2-groove_top-groove_height/2,bracket_thick+1]) rotate([90,0,0]) difference() {
+				cylinder(r=hotend_rad, h=groove_height, center=true);
+				cylinder(r=groove_rad, h=groove_height+.2, center=true);
+			}
+		}
 		translate([0,bracket_height/2,bracket_thick+1]) rotate([90,0,0]) cylinder(r=hotend_rad+1, h=.5);
+		
 
-		//bolt holes
+		//bolt slots
 		render() for(i=[0,1]) mirror([i,0,0]){
-			translate([hotend_rad+bolt_dia,0,bracket_height/2]) rotate([-90,0,0]) cylinder(r=bolt_rad, h=wall*2+1, center=true);
+			translate([hotend_rad+bolt_dia,bracket_height/4,bracket_thick/2]) cylinder(r=bolt_rad, h=bracket_thick+1, center=true);
+			translate([hotend_rad+bolt_dia,-bracket_height/4,bracket_thick/2]) cylinder(r=bolt_rad, h=bracket_thick+1, center=true);
+			translate([hotend_rad+bolt_rad,-wall*2/2,-.5]) cube([bolt_dia,bracket_height/2,bracket_thick+1]); 
 		}
 	}
 }
