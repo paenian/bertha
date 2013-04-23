@@ -12,7 +12,10 @@ rod_end_thickness = 8;
 %translate([0,0,65]) cube([40,40,10],center=true);
 %translate([0,36,20]) cube([40,10,40],center=true);
 
-radius=36;
+radius = 36;
+extruder_rad = 18;
+center_rad = 42;
+
 //%translate([0,22.5,0]) cylinder(r=hotend_rad, h=50);
 
 
@@ -34,7 +37,7 @@ module hotend_effector(){
 
 			//extruder mounts
 			for(i=[0:120:359]) rotate([0,0,i])
-				translate([0,16.5,30]) extruder_mount(1);
+				translate([0,extruder_rad,30]) extruder_mount(1);
 		}
 
 		//arms
@@ -43,12 +46,11 @@ module hotend_effector(){
 
 		//extruder mounts
 		for(i=[0:120:359]) rotate([0,0,i])
-			translate([0,17.5,30]) extruder_mount(0);
+			translate([0,extruder_rad,30]) extruder_mount(0);
 	}
 }
 
 body_rad = 60;
-center_rad = 36;
 height = 50;
 module hexamid(){
 	difference(){
@@ -67,7 +69,7 @@ module hexamid(){
 }
 
 mount_height = 15;
-mount_width = 48;
+mount_width = 60;
 
 module extruder_mount(solid = 1){
 	if(solid){
@@ -76,6 +78,7 @@ module extruder_mount(solid = 1){
 		union(){
 			//hotend hole
 			translate([0,wall,.3]) cylinder(r=hotend_rad, h=mount_height);
+			%translate([0,wall,.3]) cylinder(r=2, h=height);
 
 			//bolt slots
 			render() for(i=[0,1]) mirror([i,0,0]){
@@ -93,7 +96,7 @@ module extruder_mount(solid = 1){
 
 bracket_height = 20;
 bracket_thick = wall*2;
-bracket_width = mount_width-8;
+bracket_width = 40;
 
 pushfit_dia = 10;
 pushfit_rad = pushfit_dia/2;
