@@ -9,8 +9,8 @@ hotend_groove_rad=6;
 
 rod_end_thickness = 8;
 
-%translate([0,0,65]) cube([40,40,10],center=true);
-%translate([0,36,20]) cube([40,10,40],center=true);
+//translate([0,0,65]) cube([40,40,10],center=true);
+//translate([0,36,20]) cube([40,10,40],center=true);
 
 radius = 36;
 extruder_rad = 18;
@@ -19,11 +19,13 @@ center_rad = 42;
 //%translate([0,22.5,0]) cylinder(r=hotend_rad, h=50);
 
 
-//rail_effector();
+rail_effector();
 //adjustable_wheel();
-hotend_effector();
+//hotend_effector();
 //translate([0,33,25])
-//extruder_bracket();
+//hotend_clamp();
+
+//rod_end();
 
 module hotend_effector(){
 	difference(){
@@ -108,7 +110,7 @@ groove_rad = 6;
 groove_top = 5;
 
 //holds the extruder on
-module extruder_bracket(){
+module hotend_clamp(){
 	difference(){
 		union(){
 			//hotend block
@@ -310,5 +312,35 @@ module arm_mounts_outer(solid = 1){
 
 		//flatten the bottom
 		translate([wall+10,0,0]) cube([20,25,arm_sep*2],center=true);
+	}
+}
+
+rod_size = 6.2;
+module rod_end(){
+	difference(){
+		//translate([0,rod_size/2,0])
+		minkowski(){
+			rotate([0,0,30]) cylinder(r=rod_size+1, h=30, $fn=6);
+			difference(){
+				sphere(r=1, $fn=12);
+				translate([0,0,-2]) cube([4,4,4],center=true);
+			}
+		}
+
+		//carbon fiber rod hole
+		translate([0,0,-.01]) cylinder(r=rod_size/2/cos(180/4), h=rod_size*2, $fn=4);
+	
+		//glue holes
+		translate([0,0,rod_size]) rotate([0,90,0]) cylinder(r=1.75, h=30, center=true);
+
+		//nut slot
+		translate([0,0,rod_size*2+wall/2]) {
+			cylinder(r=nut_rad, h=rod_size*2, $fn=6);
+			translate([nut_rad/2,0,0]) cylinder(r=nut_rad, h=rod_size*2, $fn=6);
+			translate([nut_rad,0,0]) cylinder(r=nut_rad, h=rod_size*2, $fn=6);
+		}
+
+		//bolt hole
+		translate([0,0,rod_size*4+wall/2+.3]) cylinder(r=bolt_rad, h=rod_size*2);
 	}
 }
