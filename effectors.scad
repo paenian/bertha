@@ -2,7 +2,7 @@ include <configuration.scad>;
 
 rail_width=25.4649;
 v_rad = 9.77;
-arm_sep = 60;
+arm_sep = 70;
 
 hotend_rad = 8;
 hotend_groove_rad=6;
@@ -14,18 +14,18 @@ rod_end_thickness = 8;
 
 
 height = 40;
-radius = 36;
-extruder_rad = 24;
-center_rad = 14;
+radius = 40;
+extruder_rad = 25;
+center_rad = 15;
 igus_rad = 6/2;
 
-%translate([0,0,0]) cylinder(r=extruder_rad, h=1);
+//%translate([0,0,0]) cylinder(r=extruder_rad, h=1);
 %rotate([0,0,30]) cylinder(r=center_rad/cos(60), h=1, $fn=3);
 
 
-//rail_effector();
+rail_effector();
 //adjustable_wheel();
-hotend_effector();
+//hotend_effector();
 //translate([0,33,25])
 //hotend_clamp();
 
@@ -304,8 +304,8 @@ module wheel_mount(solid = 1){
 		cylinder(r=v_rad-2, h=wall);
 		translate([0,0,wall]) cylinder(r1=v_rad-2, r2=8/2, h=10);
 	}else{
-		translate([0,0,-.01]) cylinder(r=nut_rad, h=nut_height, $fn=6);
-		translate([0,0,nut_height+.3]) cylinder(r=bolt_rad, h=20);
+		translate([0,0,-.01]) cylinder(r=nut_rad, h=nut_height*2, $fn=6);
+		translate([0,0,nut_height*2+.3]) cylinder(r=bolt_rad, h=20);
 	}
 }
 
