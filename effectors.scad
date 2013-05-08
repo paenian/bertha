@@ -18,6 +18,7 @@ radius = 40;
 extruder_rad = 25;
 center_rad = 15;
 igus_rad = 6/2;
+shroud_height = 35;	//height of fan shroud.  Adjust based on extruder.
 
 //%translate([0,0,0]) cylinder(r=extruder_rad, h=1);
 %rotate([0,0,30]) cylinder(r=center_rad/cos(60), h=1, $fn=3);
@@ -50,6 +51,9 @@ module hotend_effector(){
 			//extruder mounts
 			for(i=[0:120:359]) rotate([0,0,i])
 				translate([0,extruder_rad,0]) extruder_mount(1);
+
+			//fan diverter
+			fan_shroud();
 		}
 
 		//arms
@@ -124,6 +128,24 @@ module ybar(size = wall*2, height = height){
 //		cylinder(r=size/cos(60), h = height, $fn=3);
 //		for(i=[-30:120:359]) rotate([0,0,i]) translate([0,size,-.1]) rotate([0,0,30]) cylinder(r=size/2, h=height+.2,$fn=36);
 //	}
+}
+
+module fan_shroud(){
+	difference(){
+		union(){
+			for(i=[0:120:359]){
+				rotate([0,0,i]) translate([0,center_rad+1,0]) scale([1.3,1,shroud_height/center_rad]) sphere(r=center_rad+1);
+			}
+		}
+		
+		for(i=[0:120:359]) rotate([0,0,i]) translate([0,center_rad+1,-.1]) {
+			scale([1.3,1,shroud_height/center_rad]) sphere(r=center_rad);
+			translate([-30,0,0]) cube([60,30,60]);
+		}
+
+		//cut off the bottom
+		translate([0,0,-50]) cube([100,100,100], center=true);
+	}
 }
 
 bracket_height = 20;
