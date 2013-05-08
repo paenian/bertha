@@ -363,30 +363,21 @@ module arm_mounts_outer(solid = 1){
 
 rod_size = 6.2;
 module rod_end(){
+	translate([0,0,rod_size*cos(30)-1]) rotate([90+4,0,0])
 	difference(){
-		//translate([0,rod_size/2,0])
-		minkowski(){
-			rotate([0,0,30]) cylinder(r=rod_size+1, h=30, $fn=6);
-			difference(){
-				sphere(r=1, $fn=12);
-				translate([0,0,-2]) cube([4,4,4],center=true);
-			}
+		cylinder(r=rod_size, h=40, $fn=6);
+
+		//taper
+		for(i=[0:1]) mirror([0,i,0]) translate([-10,rod_size*cos(30)-1,0]) rotate([4,0,0]) translate([0,0,-1]) cube([20,10,50]);
+
+		//carbon fiber hole
+		translate([0,0,-.01]) rotate([0,0,45]) cylinder(r=rod_size/2/cos(180/4), h=20, $fn=4);
+
+		//nut hole
+		translate([0,0,22.5]){
+			cylinder(r=bolt_rad, h=20);
+			cylinder(r=nut_rad, h=15, $fn=6);
+			translate([0,0,7.5]) cube([nut_rad+1,20,15],center=true);
 		}
-
-		//carbon fiber rod hole
-		translate([0,0,-.01]) cylinder(r=rod_size/2/cos(180/4), h=rod_size*2, $fn=4);
-	
-		//glue holes
-		translate([0,0,rod_size]) rotate([0,90,0]) cylinder(r=1.75, h=30, center=true);
-
-		//nut slot
-		translate([0,0,rod_size*2+wall/2]) {
-			cylinder(r=nut_rad, h=rod_size*2, $fn=6);
-			translate([nut_rad/2,0,0]) cylinder(r=nut_rad, h=rod_size*2, $fn=6);
-			translate([nut_rad,0,0]) cylinder(r=nut_rad, h=rod_size*2, $fn=6);
-		}
-
-		//bolt hole
-		translate([0,0,rod_size*4+wall/2+.3]) cylinder(r=bolt_rad, h=rod_size*2);
 	}
 }
