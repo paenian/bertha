@@ -89,7 +89,7 @@ module hexamid(){
 }
 
 mount_height = 15;
-mount_width = 70;
+mount_width = 75;
 
 module extruder_mount(solid = 1){
 	if(solid){
