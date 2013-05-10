@@ -17,12 +17,12 @@ rounding = 10;
 $fn=32;
 
 //idler for printing
-bracket(motor=false);
+//bracket(motor=false);
 //translate([0,-15,0])
 //idler();
 
 //motor
-//bracket(motor=true);
+bracket(motor=true);
 
 
 

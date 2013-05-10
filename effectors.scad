@@ -24,13 +24,13 @@ shroud_height = 35;	//height of fan shroud.  Adjust based on extruder.
 %rotate([0,0,30]) cylinder(r=center_rad/cos(60), h=1, $fn=3);
 
 
-rail_effector();
+//rail_effector();
 //adjustable_wheel();
 //hotend_effector();
 //translate([0,33,25])
 //hotend_clamp();
 
-//rod_end();
+rod_end();
 
 module hotend_effector(){
 	difference(){
@@ -383,7 +383,7 @@ module arm_mounts_outer(solid = 1){
 	}
 }
 
-rod_size = 6.2;
+rod_size = 8.4;
 module rod_end(){
 	translate([0,0,rod_size*cos(30)-1]) rotate([90+4,0,0])
 	difference(){
