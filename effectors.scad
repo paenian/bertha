@@ -24,12 +24,12 @@ shroud_height = 35;	//height of fan shroud.  Adjust based on extruder.
 %rotate([0,0,30]) cylinder(r=center_rad/cos(60), h=1, $fn=3);
 
 
-rail_effector();
+//rail_effector();
 //adjustable_wheel();
 //hotend_effector();
 //translate([0,33,25])
 //hotend_clamp();
-//rod_end();
+rod_end();
 
 module hotend_effector(){
 	difference(){
@@ -383,13 +383,14 @@ module arm_mounts_outer(solid = 1){
 }
 
 rod_size = 8.4;
+taper = 4;
 module rod_end(){
-	translate([0,0,rod_size*cos(30)-1]) rotate([90+4,0,0])
+	translate([0,0,rod_size*cos(30)-1]) rotate([90+taper,0,0])
 	difference(){
 		cylinder(r=rod_size, h=40, $fn=6);
 
 		//taper
-		for(i=[0:1]) mirror([0,i,0]) translate([-10,rod_size*cos(30)-1,0]) rotate([4,0,0]) translate([0,0,-1]) cube([20,10,50]);
+		for(i=[0:1]) mirror([0,i,0]) translate([-10,rod_size*cos(30)-1,0]) rotate([taper,0,0]) translate([0,0,-1]) cube([20,10,50]);
 
 		//carbon fiber hole
 		translate([0,0,-.01]) rotate([0,0,45]) cylinder(r=rod_size/2/cos(180/4), h=20, $fn=4);
