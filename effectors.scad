@@ -12,13 +12,13 @@ rod_end_thickness = 8;
 //translate([0,0,65]) cube([40,40,10],center=true);
 //translate([0,36,20]) cube([40,10,40],center=true);
 
-
+$fn=36;
 height = 40;
 radius = 40;
 extruder_rad = 25;
 center_rad = 15;
 igus_rad = 6/2;
-shroud_height = 35;	//height of fan shroud.  Adjust based on extruder.
+shroud_height = 40;	//height of fan shroud.  Adjust based on extruder.
 
 //%translate([0,0,0]) cylinder(r=extruder_rad, h=1);
 %rotate([0,0,30]) cylinder(r=center_rad/cos(60), h=1, $fn=3);
@@ -26,10 +26,10 @@ shroud_height = 35;	//height of fan shroud.  Adjust based on extruder.
 
 //rail_effector();
 //adjustable_wheel();
-//hotend_effector();
+hotend_effector();
 //translate([0,33,25])
 //hotend_clamp();
-rod_end();
+//rod_end();
 
 module hotend_effector(){
 	difference(){
@@ -53,6 +53,9 @@ module hotend_effector(){
 
 			//fan diverter
 			fan_shroud();
+
+			//anchor
+			sphere(r=4);
 		}
 
 		//arms
@@ -100,7 +103,7 @@ module extruder_mount(solid = 1){
 			translate([-mount_width/4,.01,-.1]) cube([mount_width/2,wall*3,mount_height+1]);
 
 			//hotend hole
-			translate([0,0,-.1]) cylinder(r=hotend_rad/cos(180/18), h=mount_height+1, $fn=18);
+			translate([0,0,-.1]) cylinder(r=hotend_rad/cos(180/18), h=mount_height+1, $fn=36);
 			%translate([0,0,0]) cylinder(r=2, h=50);
 
 			//bolt slots
