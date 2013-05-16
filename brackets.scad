@@ -1,6 +1,6 @@
 include <configuration.scad>;
 
-%translate([0,0,-.05]) cube([200,200,.1],center=true);
+//%translate([0,0,-.05]) cube([200,200,.1],center=true);
 
 radius = 48;
 fudge=4;
@@ -19,10 +19,10 @@ $fn=32;
 //idler for printing
 //bracket(motor=false);
 //translate([0,-15,0])
-//idler();
+idler();
 
 //motor
-bracket(motor=true);
+//bracket(motor=true);
 
 
 
@@ -93,6 +93,8 @@ module idler_mount(){
 //Fits in the slot made above.  Has a nut trap on the outside, and a sloped ridge on the inside for the bearing to ride on.  Bolt goes through bearing into nut trap - with washers added if needed for adjustment.
 module idler(){
   translate([0,(radius+wall)*cos(30)-wall,0])
+  rotate([-90,0,0])
+  translate([0,-wall,0])
   difference(){
     union(){
       //body
@@ -106,15 +108,14 @@ module idler(){
     }
 
     //idler bolt hole
-    translate([0,wall+.1,height/4]) rotate([90,0,0]) cylinder(r=bolt_rad, h=wall*3+.2);
+    translate([0,-.2,height/4]) rotate([90,0,0]) cylinder(r=bolt_rad, h=wall*3);
 
     //idler nut trap
-    translate([0,wall+.1,height/4]) rotate([90,0,0]) cylinder(r=nut_rad, h=wall, $fn=6);
+    translate([0,wall+.05,height/4]) rotate([90,0,0]) cylinder(r=nut_rad, h=wall, $fn=6);
 
     //tensioner mount
     translate([0,0,height*2/3-wall-1]) cube([8.2,wall*3,5.2],center=true);
-    translate([0,0,height*2/3-.5]) cylinder(r=bolt_rad, h=wall, center=true);
-    translate([0,0,height*2/3-wall*2.5]) cylinder(r=bolt_rad, h=wall*3, center=true);
+    translate([0,0,height*2/3-wall*1.5]) cylinder(r=bolt_rad, h=wall*4.5, center=true);
   }
 }
 
