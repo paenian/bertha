@@ -27,9 +27,9 @@ shroud_height = 40;	//height of fan shroud.  Adjust based on extruder.
 //rail_effector();
 //adjustable_wheel();
 //hotend_effector();
-//translate([0,33,25])
-hotend_clamp();
-//rod_end();
+//translate([0,33,0])
+//hotend_clamp();
+//translate([0,-33,0]) rod_end();
 
 module hotend_effector(){
 	difference(){
@@ -160,9 +160,9 @@ pushfit_rad = pushfit_dia/2;
 pushfit_thread_dia = 6;
 pushfit_thread_rad = pushfit_thread_dia/2;
 
-groove_height = 4.5; //dec
+groove_height = 4.4; //dec
 groove_rad = 6;
-groove_top = 4.9; //dec
+groove_top = 5.1; //dec
 
 //holds the extruder on
 module hotend_clamp(){
