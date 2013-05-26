@@ -26,7 +26,7 @@ shroud_height = 40;	//height of fan shroud.  Adjust based on extruder.
 
 //rail_effector();
 //adjustable_wheel();
-//hotend_effector();
+hotend_effector();
 //translate([0,33,0])
 //hotend_clamp();
 //translate([0,-33,0]) rod_end();
