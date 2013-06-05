@@ -16,14 +16,21 @@ rounding = 10;
 
 $fn=32;
 
-//idler for printing
-//bracket(motor=false);
-//translate([0,-15,0])
-idler();
 
-//motor
+//motor for printing
 //bracket(motor=true);
 
+//idler for printing
+//bracket(motor=false);
+//translate ([0,-60,0]) idler();
+translate([0,0,sb_width/2]) rotate([0,90,0]) switch_bracket_screwed();
+
+
+//idler assembly put together
+//render() bracket(motor=false);
+//translate ([0,46,-40]) rotate ([90,0,0]) idler();
+//%translate ([0,17,5]) rotate ([-90,0,0]) switch();
+//switch_bracket_screwed();
 
 
 module bracket(motor = true){
@@ -174,4 +181,64 @@ module ext_slot(height=ext_y, rows=0, head_len=ext_x+wall, holes_x=[0,0,0], hole
       }
     }
   }
+}
+
+//can lower this in order to adjust switch up/down.  Don't think we need to, but you always need a little slop :-)
+sb_width = 24;
+//Contributed by Doug!  Thanks!
+module switch_bracket_screwed() {
+	//mounting plate, taken from "acccess hole down center" in the bracket module then modified
+	translate([0,3.75,height/2]) rotate([90,0,0]) {
+		difference (){
+			rotate([0,0,180/8]) translate([0,0,.125]) cylinder(r=sb_width/2/cos(22.5), h=7.25,center=true, $fn=8);//oct
+			cylinder (r=3.5/2,h=16,center=true,$fn=16);//screw hole
+			translate ([0,0,-4]) cylinder (r=4,h=3,center=false,$fn=16);//head relief
+		}
+
+		//switch mount
+		difference () {
+			union() {
+				translate ([0,-17.5,-2.5]) cube ([sb_width,25,2],center=true);//plate
+				hull(){//makes a filleted top mtg block
+					translate ([0,-24,-7.05+3.5]) cube ([sb_width,12,.1],center=true); //teeny flat bottom
+					union() { //rounded corners
+						translate ([sb_width/2-1,-24,3.5-6-6.725]) rotate ([90,0,0]) cylinder (r=1,h=12,center=true);
+						translate ([-sb_width/2+1,-24,3.5-6-6.725]) rotate ([90,0,0]) cylinder (r=1,h=12,center=true);
+						//#translate ([0,-19,3.5-6-6.725]) rotate ([0,90,0]) cylinder (r=1,h=23,center=true);
+					}
+					//#translate ([0,-24,3.5-6.95-6.725]) cube ([25,12,.1],center=true);//mtg block
+				}
+
+				
+			}
+			translate ([0,-20,-5]) cylinder (r=bolt_cap_rad+0.5,h=5,center=false);//head clearance
+			translate ([0,-20.25,-9]) rotate ([0,0,0]) { //switch holes for plastic screws
+				translate ([9.5/2,-2.4,0]) cylinder (r=0.95,h=10,center=true);
+				translate ([-9.5/2,-2.4,0]) cylinder (r=0.95,h=10,center=true);
+			}	
+		}
+	}
+} 
+
+
+//Contributed by Doug!
+module switch() { //models donghai kw4-3z-3 switch
+	//body
+	difference () {
+		cube ([20,10,6.55],center=true);
+		translate ([9.5/2,-2.4,0]) cylinder (r=1.25,h=7,center=true);
+		translate ([-9.5/2,-2.4,0]) cylinder (r=1.25,h=7,center=true);
+	}
+	
+	//roller
+	translate ([8.25,12.2,0]) cylinder (r=4.75/2,h=3.3,center=true);
+	//lever
+	translate ([1.5,7.5,0]) rotate ([0,0,10]) {
+		cube ([20,.4,4], center=true);
+		translate ([-10,-1,0]) rotate ([0,0,100]) cube ([2,.4,4], center=true);
+	}
+	//terminals
+	translate ([16.5/2,-7,0]) cube ([.44,4,3.4],center=true);
+	translate ([-16.5/2,-7,0]) cube ([.44,4,3.4],center=true);
+	translate ([-0.75,-7,0]) cube ([.44,4,3.4],center=true);
 }
