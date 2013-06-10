@@ -11,3 +11,6 @@ bolt_cap_rad = bolt_cap_dia/2;
 nut_dia = 9+nut_slop;
 nut_rad = nut_dia/2;
 nut_height = 3;
+
+ext_x = 20;
+ext_y = 60;

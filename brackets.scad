@@ -5,9 +5,6 @@ include <configuration.scad>;
 radius = 48;
 fudge=4;
 
-ext_x = 20;
-ext_y = 60;
-
 
 height = ext_y;
 
