@@ -19,4 +19,23 @@ Drive: Synchromesh cable.  Low cost option: Fishing line.
 Rods: Igus rod ends, square carbon fiber tube.
 Extruders: Three of them.  Bowden style.
 
+
+
+Some Firmware Variables to get the Alpha group started.  I'll upload a sample config once I get there.
+BELT_PITCH 3.81
+PULLEY_TEETH 15
+
+STEPS_PER_ROTATION 200
+MICRO_STEPS 8
+
+
+DELTA_DIAGONAL_ROD 400  //note: set this to exactly your rod length.  Ex.  Act.  Ly.
+
+//these are all calculated, and may be a smidge off.  As long as your parts are identical, that's cool.  If these are off, your printer will be high or low in the center, its print surface will be convex or concave.
+END_EFFECTOR_HORIZONTAL_OFFSET 40
+CARRIAGE_HORIZONTAL_OFFSET 15
+PRINTER_RADIUS 208.2328   //change this one if your printer is convex/concave.
+
+
+
 Paul Chase.
