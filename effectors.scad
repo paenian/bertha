@@ -4,8 +4,6 @@ rail_width=25.4649;
 v_rad = 9.77;
 arm_sep = 70;
 
-hotend_rad = 8;
-hotend_groove_rad=6;
 
 rod_end_thickness = 8;
 
@@ -26,9 +24,9 @@ shroud_height = 40;	//height of fan shroud.  Adjust based on extruder.
 
 //rail_effector();
 //adjustable_wheel();
-hotend_effector();
+//hotend_effector();
 //translate([0,33,0])
-//hotend_clamp();
+hotend_clamp();
 //translate([0,-33,0]) rod_end();
 
 module hotend_effector(){
@@ -151,35 +149,40 @@ module fan_shroud(){
 	}
 }
 
+
+hotend_rad = 8.05;
+
 bracket_height = 15;
 bracket_thick = wall*2;
 bracket_width = 40;
 
-pushfit_dia = 10;
+pushfit_dia = 9.2;
 pushfit_rad = pushfit_dia/2;
 pushfit_thread_dia = 6;
 pushfit_thread_rad = pushfit_thread_dia/2;
 
-groove_height = 4.4; //dec
-groove_rad = 6;
-groove_top = 5.1; //dec
+groove_height = 4;
+groove_rad = 6.05;
+groove_top = 5.5;
 
 //holds the extruder on
 module hotend_clamp(){
-
+	
 	difference(){
 		union(){
 			//hotend block
 			translate([0,0,bracket_thick/2]) cube([bracket_width, bracket_height, bracket_thick], center=true);
-			//pushfit connector   //dec
+			//pushfit connector
 			difference () {
 				translate([0,bracket_height/2,0]) {
-					translate([0,pushfit_rad/2,(bracket_thick+pushfit_rad+wall)/2+.5]) cube([bracket_width, pushfit_rad, bracket_thick+pushfit_rad+1+wall], center=true);
-					translate([0,pushfit_rad/2,bracket_thick+1]) rotate([90,0,0]) cylinder(r=pushfit_rad+wall*2/2, h=pushfit_rad, center=true);
+					translate([0,wall/2,(bracket_thick+pushfit_rad+wall/2)/2+.5]) cube([bracket_width, wall, bracket_thick+pushfit_rad+1+wall/2], center=true);
+					translate([0,wall/2,bracket_thick+1]) rotate([90,0,0]) cylinder(r=pushfit_rad+wall, h=wall, center=true);
 				}
-				rotate ([90,0,0]) translate ([0,16,-15]) obloid_thingy();
+				//rotate ([90,0,0]) translate ([0,16,-15]) obloid_thingy();
 			}
 		}
+
+		for(i=[0,1]) mirror([i,0,0]) translate([-bracket_width/2,bracket_height/2+wall/2,bracket_thick+1+pushfit_rad+wall]) scale([1.44,1,1]) rotate([-90,0,0]) cylinder(r=pushfit_rad+wall,h=wall+1, center=true);
 
 		//pushfit hole
 		translate([0,bracket_height/2,bracket_thick+1]) rotate([90,0,0]) cylinder(r=pushfit_rad, h=15, center=true, $fn=72);
@@ -201,27 +204,6 @@ module hotend_clamp(){
 			translate([hotend_rad+bolt_dia,bracket_height/4,bracket_thick/2]) cylinder(r=bolt_rad, h=bracket_thick+1, center=true);
 			translate([hotend_rad+bolt_dia,-bracket_height/4,bracket_thick/2]) cylinder(r=bolt_rad, h=bracket_thick+1, center=true);
 			translate([hotend_rad+bolt_rad,-bracket_height/4,-.5]) cube([bolt_dia,bracket_height/2,bracket_thick+1]); 
-		}
-	}
-}
-module obloid_thingy (){ //dec
-	union() {
-		difference () {
-			translate ([-pushfit_rad*6,0,0]) cube ([pushfit_rad*12,pushfit_rad*4,10]);	
-			translate ([0,-pushfit_rad,0]) cylinder (r=pushfit_rad+wall*2/2, h=10);			
-			//translate ([pushfit_rad*2,0,0]) cylinder (r1=pushfit_rad,r2=pushfit_rad,h=10);		
-			//translate ([-pushfit_rad*3,0,0]) cylinder (r1=pushfit_rad,r2=pushfit_rad,h=10);	
-		}
-		union () {
-
-			hull () {
-				translate ([3*pushfit_rad-1.2,0,0]) cylinder (r1=pushfit_rad,r2=pushfit_rad,h=10);
-				translate ([6*pushfit_rad,0,0]) cylinder (r1=pushfit_rad,r2=pushfit_rad,h=10);
-			}	
-			hull () {
-				translate ([-3*pushfit_rad+1.3,0,0]) cylinder (r1=pushfit_rad,r2=pushfit_rad,h=10);
-				translate ([-6*pushfit_rad,0,0]) cylinder (r1=pushfit_rad,r2=pushfit_rad,h=10);
-			}
 		}
 	}
 }
