@@ -26,8 +26,9 @@ shroud_height = 40;	//height of fan shroud.  Adjust based on extruder.
 //adjustable_wheel();
 //hotend_effector();
 //translate([0,33,0])
-hotend_clamp();
+//hotend_clamp();
 //translate([0,-33,0]) rod_end();
+fan_mount();
 
 module hotend_effector(){
 	difference(){
@@ -412,5 +413,60 @@ module rod_end(){
 			cylinder(r1=nut_rad+1, r2=nut_rad, h=15, $fn=6);
 			translate([0,0,7.5]) cube([nut_rad+1,20,15],center=true);
 		}
+	}
+}
+
+module fan_mount(){
+	//these settings are for 40mm fan
+	hole = 38/2;
+	screws = 45/2;
+	bracket = 50;
+	screw_rad = 3.2/2;
+
+	//this'll do a 60mm fan
+	//hole = 58/2;
+	//screws = 70/2;
+	//bracket = 70;
+	//screw_rad = 3.2/2;
+
+	mount_height = 30;
+
+	//bottom hole
+	//%rotate([0,0,0]) cylinder(r=center_rad/cos(180/6), h=1, $fn=6);
+
+	//top hole
+	//%translate([0,0,mount_height+wall/2]) cube([40,40,wall], center=true);
+
+	translate([0,0,mount_height]) mirror([0,0,1])
+	difference(){
+		union(){
+			rotate([0,0,30]) cylinder(r1=center_rad/cos(60)+wall/2, r2=center_rad, h=mount_height, $fn=3);
+			
+			cylinder(r2=hole+wall/2, r1=extruder_rad-hotend_rad-wall/2, h=mount_height);
+
+			rotate([0,0,45]) translate([0,0,mount_height-wall/2]) cylinder(r=20/cos(180/4), h=wall/2, $fn=4);
+
+			//pegs
+			for(i=[0:120:359])
+				rotate([0,0,i+30]) translate([extruder_rad+wall/2,0,0]) cylinder(r=2.25, h=6, center=true, $fn=3);
+		}		
+
+		//cutout the air path
+		difference(){
+			union() translate([0,0,-.1]) {
+				cylinder(r2=hole, r1=extruder_rad-hotend_rad-wall, h=mount_height+1);
+				rotate([0,0,30]) cylinder(r1=center_rad/cos(60)-wall/2, r2=center_rad-wall, h=mount_height+.2, $fn=3);
+			}
+			for(i=[0:120:359])
+				rotate([0,0,i+90]) translate([extruder_rad,0,0]) sphere(r=hotend_rad+wall-.5+wall/2);
+		}
+
+		//coutout around the hotends
+		for(i=[0:120:359])
+			rotate([0,0,i+90]) translate([extruder_rad,0,0]) sphere(r=hotend_rad+wall-.5);
+
+		//cutout the fan mounting holes
+		for(i=[0:90:359])
+			rotate([0,0,i+45]) translate([screws,0,mount_height]) cylinder(r=screw_rad, h=10, center=true);
 	}
 }
