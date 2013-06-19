@@ -15,7 +15,7 @@ bed_mount_side();
 
 module bed_clip(){
 	clip_thickness = wall*2;
-	clip_width = wall*3;
+	clip_width = wall*2;
 	translate([-bed_radius+clip_width/2,-arc,0])
 	difference(){
 		//makes a pie slice
@@ -29,9 +29,9 @@ module bed_clip(){
 		
 		translate([0,0,clip_thickness-bed_thickness]) cylinder(r=bed_radius, h=bed_thickness+.1, $fn=36*20);
 	
-		rotate([0,0,arc/4]) translate([bed_radius+clip_width/2,0,-.1]){
-			cylinder(r=bolt_rad, h=5+.2);
-			translate([0,0,wall+.1]) cylinder(r1=bolt_rad, r2=bolt_cap_rad, h=bolt_cap_thickness+.1);
+		rotate([0,0,arc/2]) translate([bed_radius+clip_width/2,0,-.1]){
+			cylinder(r=bolt_rad+.1, h=5+.2);
+			translate([0,0,wall+.1]) cylinder(r1=bolt_rad+.1, r2=bolt_cap_rad, h=bolt_cap_thickness+.1);
 			translate([0,0,wall+bolt_cap_thickness+.1]) cylinder(r=bolt_cap_rad, h=bolt_cap_thickness+.1);
 		}
 	}
@@ -53,7 +53,7 @@ module bed_mount_side(){
 			cube([ext_y+wall, ext_x+wall, thickness*2]);
 	
 			//backpack
-			translate([0,ext_x-.1,0]) cube([ext_y+wall*2, wall*3, thickness]);
+			translate([0,ext_x-.1,0]) cube([ext_y+wall, wall*3, thickness]);
 
 			//wing for attachment, with fillet
 			translate([0,ext_x-.1,thickness-.1]) cube([ext_y+wall, wall, thickness+.1]);
@@ -74,9 +74,9 @@ module bed_mount_side(){
 		}
 			
 		//bolt slot
-		translate([-1, ext_x+wall*1.5,thickness/2]) rotate([0,90,0]) cylinder(r=bolt_rad+.15, h=ext_y+wall*3);
+		translate([-1, ext_x+wall*1.5,thickness/2]) rotate([0,90,0]) cylinder(r=bolt_rad, h=ext_y+wall*3);
 
 		//nut slot
-		for(i=[0:3:20]) translate([ext_y-nut_height+wall, ext_x+wall*1.5+i,thickness/2]) rotate([0,90,0]) rotate([0,0,30]) cylinder(r=nut_rad+.1, h=nut_height+.2, $fn=6);
+		for(i=[0:3:20]) translate([ext_y-nut_height, ext_x+wall*1.4+i,thickness/2]) rotate([0,90,0]) rotate([0,0,30]) cylinder(r=nut_rad+.05, h=nut_height+.4, $fn=6);
 	}
 }

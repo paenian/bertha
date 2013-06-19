@@ -1,8 +1,8 @@
 include <configuration.scad>;
 
-rumba_mount(left = true);
+//rumba_mount(left = true);
 //rumba_mount(left = false);
-//fan_mount();
+fan_mount();
 
 rumba_x = 76;
 rumba_y = 135;
@@ -63,16 +63,16 @@ module rumba_mount(left = true){
 //%cube([40,40,40], center=true);
 module fan_mount(){
 	//these settings are for 40mm fan
-	hole = 38/2;
-	screws = 45/2;
-	bracket = 50;
-	screw_rad = 3/2;
+	//hole = 38/2;
+	//screws = 45/2;
+	//bracket = 50;
+	//screw_rad = 3/2;
 
 	//this'll do a 60mm fan
-	//hole = 58/2;
-	//screws = 70/2;
-	//bracket = 70;
-	//screw_rad = 3.2/2;
+	hole = 58/2;
+	screws = 70/2;
+	bracket = 70;
+	screw_rad = 4.6/2;
 	
 
 	difference(){
@@ -108,7 +108,7 @@ module fan_mount(){
 		//translate([0,bracket/2+wall/2,wall/4+wall])
 		//extrusion screw holes
 		for(i=[wall*1.5-bracket/2,bracket/2-wall*1.5]) {
-			translate([i,bracket/2+wall/2,wall*1.4]) rotate([90,0,0]) cylinder(r=bolt_rad, h=wall*3, center=true);
+			translate([i,bracket/2+wall/2,wall*1.4]) rotate([90,0,0]) cylinder(r=3.3/2, h=wall*3, center=true);
 			translate([i,bracket/2-wall/2,wall*1.4]) rotate([90,0,0]) cylinder(r=bolt_cap_rad, h=wall, center=true);
 		}
 	}
