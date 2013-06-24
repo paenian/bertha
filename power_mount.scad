@@ -1,7 +1,7 @@
 include <configuration.scad>;
 
-//power_mount_side();
-switch_mount();
+power_mount_side();
+//switch_mount();
 
 module switch_mount(){
 	power_x = 38;
@@ -13,14 +13,15 @@ module switch_mount(){
 	
 	slot_z = 10;
 	
-	mount_x =  power_x+wall*2;
+	mount_x =  power_x+wall;
 	mount_y = power_y+wall*2;
 	mount_z = power_z+wall*2;
 	
 	mount_bolt_rad = 3.3/2;
+	mount_bolt_cap_rad = 3.3;
 
 	min_rad = 2;
-	min_res = 36;
+	min_res = 18;
 
 	%translate([mount_x, 0, slot_z+wall]) cube([ext_x, mount_y, ext_y]);
 
@@ -36,8 +37,10 @@ module switch_mount(){
 			hull(){
 				for(i=[-wall, mount_y+wall]) translate([mount_x-wall, i, slot_z+wall+ext_x/2]) rotate([0,90,0]) cylinder(r=ext_x/2, h=wall);
 				translate([mount_x-wall, mount_y/2, slot_z+wall+ext_y-ext_x/2]) rotate([0,90,0]) cylinder(r=ext_x/2, h=wall);
-				//this is just to make the hull work out for printing
+				
+				//these are just to make the hull work out for printing
 				translate([mount_x-wall, mount_y/2, wall]) rotate([0,90,0]) cylinder(r=wall, h=wall);
+				translate([mount_x/2, mount_y/2, mount_z/2]) rotate([0,90,0]) cylinder(r=wall, h=1, center=true);
 			}
 
 			//power mount wings
@@ -50,7 +53,7 @@ module switch_mount(){
 		//power insertion hole
 		translate([-.1,wall+min_rad,wall+min_rad])
 		minkowski($fn=min_res){
-			cube([power_x-min_rad*2, power_y-min_rad*2, power_z-min_rad*2]);
+			cube([power_x-min_rad, power_y-min_rad*2, power_z-min_rad*2]);
 			sphere(r=min_rad);
 		}
 
@@ -58,7 +61,7 @@ module switch_mount(){
 		translate([power_x-min_rad*2, wall+min_rad,wall+min_rad])
 		minkowski($fn=min_res){
 			//cube([power_x-min_rad*2, power_y-min_rad*2, power_z-min_rad*2]);
-			cube([ext_x*3, power_y-min_rad*2, slot_z-min_rad*2+.5]);
+			cube([ext_x*3, power_y-min_rad*2, slot_z-min_rad]);
 			sphere(r=min_rad);
 		}
 
@@ -68,8 +71,14 @@ module switch_mount(){
 		for(y=[(mount_y+power_hole_sep)/2, (mount_y+power_hole_sep)/2-power_hole_sep]) translate([wall, y, mount_z/2]) rotate([0,90,0]) cylinder(r=nut_rad, h=wall*2, $fn=6);
 
 		//extrusion mount holes
-		for(i=[-wall, mount_y+wall]) translate([mount_x, i, slot_z+wall+ext_x/2]) rotate([0,90,0]) cylinder(r=mount_bolt_rad, h=20, center=true);
-		translate([mount_x, mount_y/2, slot_z+wall+ext_y-ext_x/2]) rotate([0,90,0]) cylinder(r=mount_bolt_rad, h=20, center=true);
+		for(i=[-wall, mount_y+wall]) translate([mount_x/2+.1, i, slot_z+wall+ext_x/2]) rotate([0,90,0])	{
+			cylinder(r=mount_bolt_rad, h=mount_x/2);
+			translate([0,0,-wall]) cylinder(r=mount_bolt_cap_rad, h=mount_x/2);
+		}
+		translate([mount_x/2+.1, mount_y/2, slot_z+wall+ext_y-ext_x/2]) rotate([0,90,0]) {
+			cylinder(r=mount_bolt_rad, h=mount_x/2);
+			translate([0,0,-wall]) cylinder(r=mount_bolt_cap_rad, h=mount_x/2);
+		}
 	}
 }
 
