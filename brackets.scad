@@ -18,9 +18,9 @@ $fn=32;
 //bracket(motor=true);
 
 //idler for printing
-//bracket(motor=false);
+bracket(motor=false);
 //translate ([0,-60,0]) idler();
-translate([0,0,sb_width/2]) rotate([0,90,0]) switch_bracket_screwed();
+//translate([0,0,sb_width/2]) rotate([0,90,0]) switch_bracket_screwed();
 
 
 //idler assembly put together
