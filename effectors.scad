@@ -17,18 +17,19 @@ extruder_rad = 25;
 center_rad = 15;
 igus_rad = 6/2;
 shroud_height = 40;	//height of fan shroud.  Adjust based on extruder.
+rail_offset = 10;
 
 //%translate([0,0,0]) cylinder(r=extruder_rad, h=1);
-%rotate([0,0,30]) cylinder(r=center_rad/cos(60), h=1, $fn=3);
+//%rotate([0,0,30]) cylinder(r=center_rad/cos(60), h=1, $fn=3);
 
 
-//rail_effector();
+rail_effector();
 //adjustable_wheel();
 //hotend_effector();
 //translate([0,33,0])
 //hotend_clamp();
 //translate([0,-33,0]) rod_end();
-fan_mount();
+//fan_mount();
 
 module hotend_effector(){
 	difference(){
@@ -168,7 +169,6 @@ groove_top = 5.5;
 
 //holds the extruder on
 module hotend_clamp(){
-	
 	difference(){
 		union(){
 			//hotend block
@@ -179,7 +179,6 @@ module hotend_clamp(){
 					translate([0,wall/2,(bracket_thick+pushfit_rad+wall/2)/2+.5]) cube([bracket_width, wall, bracket_thick+pushfit_rad+1+wall/2], center=true);
 					translate([0,wall/2,bracket_thick+1]) rotate([90,0,0]) cylinder(r=pushfit_rad+wall, h=wall, center=true);
 				}
-				//rotate ([90,0,0]) translate ([0,16,-15]) obloid_thingy();
 			}
 		}
 
@@ -209,136 +208,86 @@ module hotend_clamp(){
 	}
 }
 
-bio_rad = 96;
-module biohazard(){
-	difference(){
-		for(i=[0:120:359]) rotate([0,0,i]){
-			intersection(){
-				translate([0,bio_rad,0]) cylinder(r=bio_rad, h=wall*2, $fn=64);
-				cylinder(r=62, h=wall*2, $fn=64);
-			}
-		}
-		for(i=[0:120:359]) rotate([0,0,i]){
-			translate([0,bio_rad+wall*3,-.1]) cylinder(r=bio_rad-wall, h=wall*2+.2, $fn=64);
-		}
-	}
-}
-
 module rail_effector(){
+	thickness = 15;
+	pulley_rad = 8;
+	outer_rad = sqrt(pow(rail_width/2+v_rad,2)+pow((rail_width+v_rad*2)/sqrt(3),2))+1;
+	inner_rad = rail_width/2+v_rad;
+	facets = 6;
 	difference(){
 		union(){
-			//v wheels
-			%translate([-rail_width/2-v_rad,0,0]) adjustable_wheel();
-			adjustable_wheel_mount(1);
+			//body
+			rotate([0,0,180/facets]) difference(){
+				cylinder(r=outer_rad/cos(180/facets), h=thickness, $fn=facets);
+				translate([0,0,-.1]) cylinder(r=inner_rad/cos(180/facets), h=thickness+1, $fn=facets);
+			}
 
-			for(i=[0,1]) mirror([0,i,0]) translate([rail_width/2+v_rad,(rail_width+v_rad*2)/sqrt(3),0]) wheel_mount(1);
+			//v wheel mounts
+			translate([-rail_width/2-v_rad,0,0]) wheel_mount(1, thickness-2);
+			hull(){
+				for(i=[0,1]) mirror([0,i,0]) translate([rail_width/2+v_rad,(rail_width+v_rad*2)/sqrt(3),0]) wheel_mount(1, thickness-2);
+				//belt mount
+				translate([pulley_rad,0,0]) belt_mount(1, thickness-4);
+			}
 
 			//arms
-			translate([0,radius-.5,0]) arm_mounts(1);
-
-			//belt mount
-			for(i=[0,1]) mirror([0,i,0]) translate([8,(rail_width/2+v_rad+8)/sqrt(3),0]) belt_mount(1);
-
-			//connect everything up
-			rail_body();
+			hull(){
+				translate([0,outer_rad,thickness+rod_end_thickness]) arm_mounts(1);
+				translate([0,outer_rad,1/2]) cube([27,arm_rad*2,1], center=true);
+			}
 		}
 
-		//holes for everything
-		//v wheels
-		//translate([-rail_width/2-v_rad,0,0]) wheel_mount(0);
-		adjustable_wheel_mount(0);
-		for(i=[0,1]) mirror([0,i,0]) translate([rail_width/2+v_rad,(rail_width+v_rad*2)/sqrt(3),0]) wheel_mount(0);
-
-		//arms
-		translate([0,radius-.5,0]) arm_mounts(0);
+		//v wheel mounts
+		for(i=[0,1]) mirror([0,i,0]) translate([rail_width/2+v_rad,(rail_width+v_rad*2)/sqrt(3),0]) wheel_mount(0, thickness);
+		translate([-rail_width/2-v_rad,0,0]) wheel_mount(0, thickness);
 
 		//belt mount
-		for(i=[0,1]) mirror([0,i,0]) translate([8,(rail_width/2+v_rad+8)/sqrt(3),0]) belt_mount(0);
-	}
-}
+		translate([pulley_rad,0,0]) belt_mount(0, thickness);
 
-slider_offset=6.5;
+		//belt cutouts
+		for(i=[0,1]) mirror([i,0,0]) hull(){
+			translate([pulley_rad,outer_rad,thickness+arm_rad+6]) rotate([90,0,0]) cylinder(r=pulley_rad/2, h=outer_rad, center=true);
+			translate([pulley_rad,outer_rad,thickness+pulley_rad]) rotate([90,0,0]) cylinder(r=pulley_rad/2, h=outer_rad, center=true);
+		}
 
-module adjustable_wheel(){
-	difference(){
-		union(){
-			wheel_mount(1);
-			intersection(){
-				translate([0,0,wall]) rotate([0,90,0]) cylinder(r=v_rad/cos(45)-.5, h=16, center=true, $fn=4);
-				translate([0,0,wall]) cube([20,30,wall*2],center=true);
-				translate([9,0,0]) cylinder(r=18, h=30, $fn=6);
-			}
-		}
-		wheel_mount(0);
-		for(i=[0,1]) mirror([0,i,0]) {
-			translate([-9,slider_offset,wall]) rotate([0,90,0]) cylinder(r=bolt_rad, h=20);
-			translate([-13,slider_offset,wall]) rotate([0,90,0]) cylinder(r=bolt_cap_rad+.5, h=8);
-		}
-	}
-}
+		//arms
+		translate([0,outer_rad,thickness+rod_end_thickness]) arm_mounts(0);
+		
 
-gap = 2;
-module adjustable_wheel_mount(solid = 1){
-	if(solid){
-		//beef up the slot
-		intersection(){
-			translate([-radius/2-rail_width/2+gap+wall*2,0,wall]) rotate([0,90,0]) cylinder(r=v_rad/cos(45)+wall/cos(45), h=radius, center=true, $fn=4);
-			translate([-radius/2-rail_width/2+gap+wall*2,0,wall]) cube([radius, radius, wall*2],center=true);
-			cylinder(r=radius-rounding/cos(30), h=wall*2, $fn=6);
-		}
-		translate([-rail_width/2+gap-.02+wall+nut_height/2,0,wall+1-.1]) cube([nut_height,30,2],center=true);
-	}else{
-		//slot
-		translate([-radius/2-rail_width/2+gap,0,wall]) rotate([0,90,0]) cylinder(r=v_rad/cos(45), h=radius, center=true, $fn=4);
+		//body cutout/tensioner
+		translate([0,-outer_rad+(outer_rad-inner_rad)/2, thickness/2]) cube([wall, outer_rad, thickness+1], center=true);
+
+		//nut slot
+		for(i=[0:10]) translate([wall,-outer_rad+(outer_rad-inner_rad)/2,thickness/2+i]) rotate([0,90,0]) cylinder(r=nut_rad, h=nut_height, $fn=6);
 
 		//bolt holes
-		for(i=[0,1]) mirror([0,i,0]) {
-			translate([-rail_width/2+gap/2-.01,slider_offset,wall]) rotate([0,90,0]) cylinder(r=bolt_rad, h=wall*2);
-			translate([-rail_width/2+gap/2-.02+wall+nut_height,slider_offset,wall]) rotate([0,90,0]) cylinder(r=nut_rad, h=wall-1, $fn=6);
-			translate([-rail_width/2+gap/2-.02+wall+nut_height,slider_offset,wall+nut_rad]) rotate([0,90,0]) cylinder(r=nut_rad, h=wall, $fn=6);
-		}
-	}
-}
-
-rounding = wall/2;
-
-module rail_body(){
-	//backbone
-	minkowski(){
-		union(){
-			difference(){
-				cylinder(r=radius-rounding/cos(30), h=wall-rounding, $fn=6);
-				cylinder(r=radius-rounding/cos(30)-wall/cos(30), h=wall-rounding+.1, $fn=6);
-			}
-			translate([0,0,wall-rounding]) difference(){
-				cylinder(r=radius-(rounding+2.45)/cos(30), h=wall-rounding, $fn=6);
-				cylinder(r=radius-(rounding+2.55)/cos(30), h=wall-rounding+.1, $fn=6);
+		for(i=[0,0]) translate([-wall*2.5,-outer_rad+(outer_rad-inner_rad)/2,thickness/2]) rotate([0,90,0]) {
+			translate([0,0,25/2-.1]) cylinder(r=bolt_rad, h=25, center=true);
+			translate([0,0,-20/2]) hull(){
+				cylinder(r=bolt_cap_rad, h=20, center=true);
+				translate([thickness/2,-bolt_cap_rad,0]) cylinder(r=bolt_cap_rad, h=20, center=true);
+				translate([-thickness/2,-bolt_cap_rad,0]) cylinder(r=bolt_cap_rad, h=20, center=true);
 			}
 		}
-		intersection(){
-			sphere(r=rounding, $fn=12);
-			translate([0,0,wall]) cube([wall*2, wall*2, wall*2], center=true);
-		}
 	}
 }
 
-module belt_mount(solid = 1){
+module belt_mount(solid = 1, thickness=16){
 	if(solid){
-		cylinder(r=v_rad, h=wall);
-		translate([0,0,wall]) cylinder(r1=v_rad, r2=bolt_cap_rad, h=nut_height+1);
+		cylinder(r=v_rad-2, h=thickness);
 	}else{
-		translate([0,0,-.01]) cylinder(r=nut_rad, h=nut_height, $fn=6);
-		translate([0,0,nut_height+.3]) cylinder(r=bolt_rad, h=wall+1);
+		translate([0,0,thickness-nut_height*2]) cylinder(r=nut_rad, h=nut_height*3.5, $fn=6);
+		translate([0,0,wall]) cylinder(r=bolt_rad, h=thickness+1);
+		translate([0,0,-.3]) cylinder(r=bolt_cap_rad, h=wall);
 	}
 }
 
-module wheel_mount(solid = 1){
+module wheel_mount(solid = 1, thickness = 16){
 	if(solid){
-		cylinder(r=v_rad-2, h=wall);
-		translate([0,0,wall]) cylinder(r1=v_rad-2, r2=8/2, h=10);
+		cylinder(r=v_rad-2, h=thickness);
 	}else{
-		translate([0,0,-.01]) cylinder(r=nut_rad, h=nut_height*2, $fn=6);
-		translate([0,0,nut_height*2+.3]) cylinder(r=bolt_rad, h=20);
+		translate([0,0,thickness-nut_height*2]) cylinder(r=nut_rad, h=nut_height*3.5, $fn=6);
+		translate([0,0,-.1]) cylinder(r=bolt_rad, h=thickness+nut_height*1.5);
 	}
 }
 
@@ -349,18 +298,18 @@ cone_height = (arm_rad-igus_rad);
 echo(cone_height);
 
 module arm_mounts(solid = 1){
-	translate([0,0,wall]) rotate([0,90,0])
+	rotate([0,90,0])
 	if(solid){
-		cylinder(r=arm_rad, h=arm_sep-cone_height*2, center=true, $fn=12);
-		for(i=[0,1]) mirror([0,0,i]) translate([0,0,arm_sep/2-cone_height]) cylinder(r1=arm_rad, r2=igus_rad, h=cone_height, $fn=12);
+		cube();
+		cylinder(r=arm_rad, h=arm_sep-cone_height*2, center=true, $fn=36);
+		for(i=[0,1]) mirror([0,0,i]) translate([0,0,arm_sep/2-cone_height]) cylinder(r1=arm_rad, r2=igus_rad, h=cone_height, $fn=36);
 	}else{
 		//nut slot
-		translate([0,0,-.01]) cylinder(r=nut_rad, h=arm_sep-cone_height*2, center=true, $fn=6);
-		translate([nut_rad,0,-.01]) cylinder(r=nut_rad, h=arm_sep-cone_height*2, center=true, $fn=6);
+		for(i=[0,-nut_rad]) translate([i,0,-.01]) cylinder(r=nut_rad, h=arm_sep-cone_height*2, center=true, $fn=6);
 		cylinder(r=bolt_rad, h=arm_sep+wall, center=true);
 
-		//flatten the bottom
-		translate([wall+10,0,0]) cube([20,25,arm_sep],center=true);
+		//flatten the top
+		translate([-arm_rad-6,0,0]) cube([20,25,arm_sep],center=true);
 
 		//make sure the rod can't hit anything
 		#render() for(i=[0,1]) mirror([0,0,i]) translate([0,0,arm_sep/2+rod_end_thickness/2]) rod_end_sweep();
