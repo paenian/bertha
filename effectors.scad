@@ -211,8 +211,8 @@ module hotend_clamp(){
 module rail_effector(){
 	thickness = 15;
 	pulley_rad = 8;
-	outer_rad = sqrt(pow(rail_width/2+v_rad,2)+pow((rail_width+v_rad*2)/sqrt(3),2))+1;
-	inner_rad = rail_width/2+v_rad;
+	outer_rad = rail_width/2+v_rad*2-3;
+	inner_rad = rail_width/2+v_rad-5;
 	facets = 6;
 	difference(){
 		union(){
@@ -231,9 +231,10 @@ module rail_effector(){
 			}
 
 			//arms
+			translate([0,inner_rad+arm_rad,thickness/2]) cube([27,arm_rad*2,thickness], center=true);
 			hull(){
-				translate([0,outer_rad,thickness+rod_end_thickness]) arm_mounts(1);
-				translate([0,outer_rad,1/2]) cube([27,arm_rad*2,1], center=true);
+				translate([0,outer_rad+arm_rad,thickness+rod_end_thickness]) arm_mounts(1);
+				translate([0,outer_rad+arm_rad,1/2]) cube([27,arm_rad*2,1], center=true);
 			}
 		}
 
@@ -251,7 +252,7 @@ module rail_effector(){
 		}
 
 		//arms
-		translate([0,outer_rad,thickness+rod_end_thickness]) arm_mounts(0);
+		translate([0,outer_rad+arm_rad,thickness+rod_end_thickness]) arm_mounts(0);
 		
 
 		//body cutout/tensioner
@@ -286,8 +287,8 @@ module wheel_mount(solid = 1, thickness = 16){
 	if(solid){
 		cylinder(r=v_rad-2, h=thickness);
 	}else{
-		translate([0,0,thickness-nut_height*2]) cylinder(r=nut_rad, h=nut_height*3.5, $fn=6);
-		translate([0,0,-.1]) cylinder(r=bolt_rad, h=thickness+nut_height*1.5);
+		translate([0,0,thickness-nut_height*2]) cylinder(r=nut_rad, h=nut_height*3.25, $fn=6);
+		translate([0,0,-.1]) cylinder(r=bolt_rad, h=thickness+nut_height*1.25);
 	}
 }
 
