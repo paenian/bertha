@@ -1,6 +1,6 @@
 include <configuration.scad>;
 
-rail_width=25.4649;
+rail_width=25.4649-.25;
 v_rad = 9.77;
 arm_sep = 70;
 
@@ -247,8 +247,8 @@ module rail_effector(){
 
 		//belt cutouts
 		for(i=[0,1]) mirror([i,0,0]) hull(){
-			translate([pulley_rad,outer_rad,thickness+arm_rad+6]) rotate([90,0,0]) cylinder(r=pulley_rad/2, h=outer_rad, center=true);
-			translate([pulley_rad,outer_rad,thickness+pulley_rad]) rotate([90,0,0]) cylinder(r=pulley_rad/2, h=outer_rad, center=true);
+			translate([pulley_rad,outer_rad,thickness+arm_rad*2]) rotate([90,0,0]) cylinder(r=pulley_rad/2, h=outer_rad*2, center=true);
+			translate([pulley_rad,outer_rad,thickness+pulley_rad/2]) rotate([90,0,0]) cylinder(r=pulley_rad/2, h=outer_rad*2, center=true);
 		}
 
 		//arms
@@ -306,7 +306,7 @@ module arm_mounts(solid = 1){
 		for(i=[0,1]) mirror([0,0,i]) translate([0,0,arm_sep/2-cone_height]) cylinder(r1=arm_rad, r2=igus_rad, h=cone_height, $fn=36);
 	}else{
 		//nut slot
-		for(i=[0,-nut_rad]) translate([i,0,-.01]) cylinder(r=nut_rad, h=arm_sep-cone_height*2, center=true, $fn=6);
+		for(i=[0,-nut_rad]) translate([i,0,-.01]) cylinder(r=nut_rad, h=arm_sep-cone_height*2-wall*2, center=true, $fn=6);
 		cylinder(r=bolt_rad, h=arm_sep+wall, center=true);
 
 		//flatten the top
