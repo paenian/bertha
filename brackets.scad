@@ -11,7 +11,7 @@ height = ext_y;
 inner = ext_x+wall;
 rounding = 10;
 
-$fn=32;
+$fn=8;
 
 
 //motor for printing
@@ -36,16 +36,24 @@ module bracket(motor = true){
       difference() {
         translate([0,fudge,0]) cylinder(r=radius-rounding,h=height-rounding,$fn=6);
       }
-		intersection(){
-      		sphere(r=rounding);
-			translate([0,0,rounding]) cube([rounding*2, rounding*2, rounding*2],center=true);
-		}
+		 intersection(){
+        sphere(r=rounding);
+        translate([0,0,rounding]) cube([rounding*2, rounding*2, rounding*2],center=true);
+		 }
     }
 
     //cut out outer wings
     for(i=[0:1])
-      mirror([i,0,0]) intersection() {
+      mirror([i,0,0]) difference() {
         translate([ext_x/2+wall+30/2,-(30/2*sqrt(3))-(wall*2-wall/2*sqrt(3)),-.1]) cylinder(r=30,h=height+1, $fn=3);
+			 translate([ext_x/2+wall,0,ext_y/2]) rotate([0,0,-30]) rotate([-90,0,0]) translate([ext_x/2,0,-50]) rotate([0,0,180/8]) cylinder(r=bolt_cap_rad+wall, h=50, $fn=8);
+      }
+
+    //trim the wings to free up extrusion slots
+    for(i=[0:1])
+      mirror([i,0,0]) difference() {
+        translate([ext_x/2+wall+30/2,-(30/2*sqrt(3))-(wall*2-wall/2*sqrt(3))+wall+1,-.1]) cylinder(r=30,h=height+1, $fn=3);
+			 translate([ext_x/2+wall,0,ext_y/2]) rotate([0,0,-30]) rotate([-90,0,0]) translate([0,0,-70]) cylinder(r=height/2, h=70, $fn=4);
       }
 
     //cut out extrusion slots
@@ -86,10 +94,18 @@ module idler_mount(){
   }
 
   //this is the channel for the idler slider
-  translate([0,(radius+wall)*cos(30)-wall,0]){
-    translate([0,0,height/2-wall-wall/2]) cylinder(r=20, h=height,center=true, $fn=4);
-    translate([0,0,height+wall/2]) cylinder(r=5.22, h=wall*2,center=true);
-    translate([0,0,height-wall/2+.3]) cylinder(r=bolt_rad, h=wall*2,center=true);
+  render() translate([0,(radius+wall)*cos(30)-wall,0]){
+    translate([0,0,height/2-wall*3.5]) cylinder(r=20, h=height,center=true, $fn=4);
+    
+    translate([0,0,height+wall/2]) cylinder(r=bolt_cap_rad, h=wall*2,center=true);
+    translate([0,0,height-wall/2+.3+.5]) cylinder(r=bolt_rad, h=wall*2+1,center=true);
+
+    translate([0,0,height-wall*2+1]) cylinder(r=bolt_rad, h=wall,center=true);
+    
+    translate([0,0,height-wall*3+nut_height/2+.3]) rotate([0,0,30]) cylinder(r=nut_rad, h=nut_height+.1, center=true, $fn=6);
+    translate([0,3,height-wall*3+nut_height/2+.3]) rotate([0,0,30]) cylinder(r=nut_rad, h=nut_height+.1, center=true, $fn=6);
+
+    translate([0,0,height-wall*3+.3]) rotate([0,0,30]) cylinder(r=bolt_rad, h=5, center=true, $fn=6);
   }
 }
 
@@ -163,9 +179,10 @@ module ext_slot(height=ext_y, rows=0, head_len=ext_x+wall, holes_x=[0,0,0], hole
       }
 
       if(holes_y[i] >= 1){
-        translate([ext_x/2,ext_y+wall+.1,ext_x/2+i*(ext_y/3)]) rotate([90,0,0]) cylinder(r=bolt_rad, h=radius*3, center=true, $fn=8);
-        for(k=[-.1-wall,ext_y+wall+head_len])
+        translate([ext_x/2,ext_y/2,ext_x/2+i*(ext_y/3)]) rotate([90,0,0]) cylinder(r=bolt_rad, h=ext_y+wall*2+1, center=true, $fn=8);
+        for(k=[-.1-wall,ext_y+wall+head_len]){
           translate([ext_x/2,k,ext_x/2+i*(ext_y/3)]) rotate([90,0,0]) cylinder(r=bolt_cap_rad, h=head_len, $fn=16);
+        }
       }
 
       //side
