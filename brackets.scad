@@ -11,15 +11,15 @@ height = ext_y;
 inner = ext_x+wall;
 rounding = 10;
 
-$fn=8;
+$fn=32;
 
 
 //motor for printing
-//bracket(motor=true);
+bracket(motor=true);
 
-//idler for printing
-bracket(motor=false);
-//translate ([0,-60,0]) idler();
+//idler for mounting on the bottom
+//bracket(motor=false, push=true);
+//translate ([0,-60,0]) idler(push=true);
 //translate([0,0,sb_width/2]) rotate([0,90,0]) switch_bracket_screwed();
 
 
@@ -27,10 +27,10 @@ bracket(motor=false);
 //render() bracket(motor=false);
 //translate ([0,46,-40]) rotate ([90,0,0]) idler();
 //%translate ([0,17,5]) rotate ([-90,0,0]) switch();
-//switch_bracket_screwed();
+//%translate([0,10,0]) switch_bracket_screwed();
 
 
-module bracket(motor = true){
+module bracket(motor = true, push = false){
   difference(){
     minkowski(){
       difference() {
@@ -57,9 +57,9 @@ module bracket(motor = true){
       }
 
     //cut out extrusion slots
-    translate([-ext_x/2, -ext_y,-.1]) ext_slot(ext_y+1,1, 0, [[1,0,1], [1,0,1]], [1,0,1]);
+    translate([-ext_x/2, -ext_y,-.1]) ext_slot(ext_y+1,1, 10, [[0,0,0], [1,0,1]], [15,0,15]);
     for(i=[0:1]) mirror([i,0,0]) {
-      translate([ext_x/2+wall,0,-.1]) rotate([0,0,-30]) ext_slot(ext_y+1, 1, ext_y, [[1,0,1], [0, 25, 0]], [0, 1, 0]);
+      translate([ext_x/2+wall,0,-.1]) rotate([0,0,-30]) ext_slot(ext_y+1, 1, ext_y, [[10,0,10], [0, 25, 0]], [0, 1, 0]);
       translate([ext_x/2+wall,0,-.1]) rotate([0,0,-30]) translate([ext_x-.1, -ext_y/2,0]) cube([ext_x, ext_y, height+1]);
     }
 
@@ -73,7 +73,7 @@ module bracket(motor = true){
     if(motor){
       motor_mount();
     }else{
-      idler_mount();
+      idler_mount(push);
     }
   }
 }
@@ -81,7 +81,7 @@ module bracket(motor = true){
 inner_radius = radius*cos(30);
 
 //idler cutout and mount
-module idler_mount(){
+module idler_mount(push = false){
   //cut out the mounting hole
   intersection(){
     translate([0,fudge-wall*3,-.1]) cylinder(r=radius+wall,h=height+.2,$fn=6);
@@ -95,23 +95,26 @@ module idler_mount(){
 
   //this is the channel for the idler slider
   render() translate([0,(radius+wall)*cos(30)-wall,0]){
-    translate([0,0,height/2-wall*3.5]) cylinder(r=20, h=height,center=true, $fn=4);
-    
     translate([0,0,height+wall/2]) cylinder(r=bolt_cap_rad, h=wall*2,center=true);
     translate([0,0,height-wall/2+.3+.5]) cylinder(r=bolt_rad, h=wall*2+1,center=true);
+    if(push){
+      translate([0,0,height/2-wall*3.5]) cylinder(r=20, h=height,center=true, $fn=4);
 
-    translate([0,0,height-wall*2+1]) cylinder(r=bolt_rad, h=wall,center=true);
+      translate([0,0,height-wall*2+1]) cylinder(r=bolt_rad, h=wall,center=true);
     
-    translate([0,0,height-wall*3+nut_height/2+.3]) rotate([0,0,30]) cylinder(r=nut_rad, h=nut_height+.1, center=true, $fn=6);
-    translate([0,3,height-wall*3+nut_height/2+.3]) rotate([0,0,30]) cylinder(r=nut_rad, h=nut_height+.1, center=true, $fn=6);
+      translate([0,0,height-wall*3+nut_height/2+.3]) rotate([0,0,30]) cylinder(r=nut_rad, h=nut_height+.1, center=true, $fn=6);
+      translate([0,3,height-wall*3+nut_height/2+.3]) rotate([0,0,30]) cylinder(r=nut_rad, h=nut_height+.1, center=true, $fn=6);
 
-    translate([0,0,height-wall*3+.3]) rotate([0,0,30]) cylinder(r=bolt_rad, h=5, center=true, $fn=6);
+      translate([0,0,height-wall*3+.3]) rotate([0,0,30]) cylinder(r=bolt_rad, h=5, center=true, $fn=6);
+    }else{
+      translate([0,0,height/2-wall*2.5]) cylinder(r=20, h=height,center=true, $fn=4);
+    }
   }
 }
 
 //idler slider
 //Fits in the slot made above.  Has a nut trap on the outside, and a sloped ridge on the inside for the bearing to ride on.  Bolt goes through bearing into nut trap - with washers added if needed for adjustment.
-module idler(){
+module idler(push=false){
   translate([0,(radius+wall)*cos(30)-wall,0])
   rotate([-90,0,0])
   translate([0,-wall,0])
@@ -127,30 +130,54 @@ module idler(){
 		translate([0,-wall+.01,height/4]) rotate([90,0,0]) cylinder(r1=bolt_cap_dia, r2=bolt_cap_rad, h=wall);
     }
 
+    
     //idler bolt hole
     translate([0,-.2,height/4]) rotate([90,0,0]) cylinder(r=bolt_rad, h=wall*3);
 
     //idler nut trap
     translate([0,wall+.05,height/4]) rotate([90,0,0]) cylinder(r=nut_rad, h=wall, $fn=6);
-
-    //tensioner mount
-    translate([0,0,height*2/3-wall-1]) cube([8.2,wall*3,5.2],center=true);
-    translate([0,0,height*2/3-wall*1.5]) cylinder(r=bolt_rad, h=wall*4.5, center=true);
+    
+    if(push==false){
+      //tensioner mount
+      translate([0,0,height*2/3-wall-1]) cube([8.2,wall*3,5.2],center=true);
+      translate([0,0,height*2/3-wall*1.5]) cylinder(r=bolt_rad, h=wall*4.5, center=true);
+    }else{
+      translate([0,0,height*2/3]) cylinder(r=bolt_rad, h=wall, center=true);
+    }
   }
 }
+
+sb_offset=6;
+sb_height=10;
+sb_width = 20;
+sb_screws=9.5;
+sb_rad = .95;
+
 
 //motor cutout and mount
 module motor_mount(){
   //cut out motor hole
   intersection(){
     translate([0,fudge,-.1]) cylinder(r=radius-wall,h=height+1,$fn=6);
-	 union(){
-      translate([0,(inner)*cos(30)+wall,-.1]) cylinder(r=inner,h=height+1,$fn=6);
+	  union(){
+      difference(){
+        translate([0,(inner)*cos(30)+wall,-.1]) cylinder(r=inner,h=height+1,$fn=6);
+        hull(){//makes a filleted top mtg block
+				translate ([0,wall+sb_offset/2-.1,sb_height/2]) cube ([sb_width,sb_offset,sb_height],center=true); //teeny flat bottom
+				//rounded corners
+				for(i=[0:1]) mirror([i,0,0]) translate ([sb_width/2-sb_rad,sb_offset+wall,0]) cylinder (r=sb_rad,h=sb_height);
+        }
+      }
       for(i=[-1,1])
         translate([0,(inner)*cos(30)+wall,-.1]) rotate([0,0,i*30+90]) translate([20,0,0]) cylinder(r=inner,h=height+1,$fn=6);
     }
   }
-    
+
+  //mounting holes for the microswitch
+  render() for(i=[0:1]) mirror([i,0,0]) translate([sb_screws/2,wall,sb_height/2]) rotate([-90,0,0]) {
+    cylinder(r=sb_rad, h=sb_offset*2);
+    translate([0,0,sb_offset*2]) cylinder(r=bolt_rad, h=ext_y);
+  }
   //and the motor mount
   translate([0,radius*cos(30),height/2]) rotate([90,0,0]) cylinder(r=13, h=20,center=true, $fn=16);
   for(i=[0:3]){
@@ -198,7 +225,6 @@ module ext_slot(height=ext_y, rows=0, head_len=ext_x+wall, holes_x=[0,0,0], hole
 }
 
 //can lower this in order to adjust switch up/down.  Don't think we need to, but you always need a little slop :-)
-sb_width = 24;
 //Contributed by Doug!  Thanks!
 module switch_bracket_screwed() {
 	//mounting plate, taken from "acccess hole down center" in the bracket module then modified
@@ -222,7 +248,6 @@ module switch_bracket_screwed() {
 					}
 					//#translate ([0,-24,3.5-6.95-6.725]) cube ([25,12,.1],center=true);//mtg block
 				}
-
 				
 			}
 			translate ([0,-20,-5]) cylinder (r=bolt_cap_rad+0.5,h=5,center=false);//head clearance
