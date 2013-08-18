@@ -1,8 +1,9 @@
 include <configuration.scad>;
+include <declib.scad>;
 
 //rumba_mount(left = true);
 //rumba_mount(left = false);
-fan_mount();
+fan_motor_mount();
 
 rumba_x = 76;
 rumba_y = 135;
@@ -113,3 +114,122 @@ module fan_mount(){
 		}
 	}
 }
+
+module radplate(x=10, y=10, z=10, rad=1){
+	render() translate([0,0,z/2]) minkowski(){
+		cube([x-rad*2,y-rad*2,z-.02], center=true);
+		cylinder(r=rad, h=.01);
+	}
+}
+
+%cube([10,10,220],center=true);
+
+module fan_motor_mount(){
+	//this'll do a 60mm fan
+	hole = 58/2;
+	screws = 70/2;
+	fan_w = 60+2;
+	screw_rad = 5/2;
+	fan_t = 15;
+
+	motor_height = fan_t+fan_w+10;
+	motor_w = 42.5+1;
+	motor_h = 20;
+
+	//stock, this thing is 110mm tall; the fan extend to 85mm from the motor.
+	
+	difference () {
+		//body
+		union () {
+			//fan surround
+			radplate(fan_w+wall, fan_w+wall, fan_t+wall/2, wall);
+			//motor surround
+			translate([0,0,motor_height]) radplate(motor_w+wall, motor_w+wall, motor_h+wall/2, wall);
+			
+			//connect 'em
+			render() hull(){
+				translate([0,0,fan_t+wall/2-.1]) radplate(fan_w+wall, fan_w+wall, .1, wall);
+				translate([0,0,motor_height-.05]) radplate(motor_w+wall, motor_w+wall, .1, wall);
+			}
+		}
+
+		//fan seat
+		translate([0,0,wall/2]) radplate(fan_w, fan_w, fan_t+wall/2, wall);
+		//fan hole
+		cylinder(r=hole, h=wall*2, center=true);
+		//fan screw holes
+		for(i=[0:90:359]) rotate([0,0,i]) translate([screws/sqrt(2),screws/sqrt(2),0]) cylinder(r=screw_rad, h=wall*2, center=true);
+
+		//motor seat
+		translate([0,0,motor_height+wall/2]) radplate(motor_w, motor_w, motor_h+wall/2, wall);
+		translate([0,0,motor_height-.1]) radplate(motor_w-wall, motor_w-wall, motor_h+wall/2, wall);
+
+		//hollow out the connector
+		render() hull(){
+			translate([0,0,fan_t+wall-.1]) radplate(fan_w, fan_w, .1, wall);
+			translate([0,0,motor_height+.1]) radplate(motor_w-wall, motor_w-wall, .1, wall);
+		}
+
+		//make some access holes in the riser
+		for(i=[0,90]) rotate([0,0,i]) render() hull(){
+			translate([0,0,fan_t+wall-.1]) radplate(fan_w-wall*3, fan_w+wall, .1, 0);
+			translate([0,0,motor_height+.1]) radplate(motor_w-wall*3, motor_w+wall*2, .1, 0);
+		}
+
+		//hollow out the motor a tad too
+		//make some access holes in the riser
+		for(i=[0,90]) rotate([0,0,i]) render() hull(){
+			translate([0,0,motor_height+wall/3+motor_h/2]) cube([motor_w-wall*2,motor_w+wall*2, motor_h-wall],center=true);
+		}
+	}
+}
+/*
+
+			//translate([0,0,motor_height]) radplate (xwid=46,ywid=46,rad=6,thk=24); //motor grabber 
+			//fan screws
+			//for(i=[0:90:359]) rotate([0,0,i]) translate([screws/sqrt(2),screws/sqrt(2),wall]) cylinder(r=screw_rad*2, h=wall*2, center=true);
+
+
+			//hull (){//outer rim standoff
+				//translate ([0,0,0]) radplate (xwid=bracket,ywid=bracket,thk=0.01,rad=6);
+				//translate([0,0,motor_height]) radplate (xwid=46,ywid=46,rad=6,thk=0.01);
+			//}
+
+
+
+		}
+/*
+		translate ([0,0,3]) radplate (xwid=43,ywid=43,rad=6,thk=50); //motor hole
+		translate ([0,0,28]) cube ([60,30,30],center=true); //air fow motor
+		rotate ([0,0,,90])   translate ([0,0,28]) cube ([60,30,30],center=true); //airflow motor
+		hull (){ //remove most of fan standoff
+			translate ([0,0,-40]) cylinder (r=58/2,h=0.01);
+			translate ([0,0,0]) radplate (xwid=40,ywid=40,rad=6,thk=0.01);
+		}
+		translate ([0,0,-18]) cube ([60,34,36],center=true); //air flow fan
+		rotate ([0,0,90])  translate ([0,0,-18]) cube ([60,34,36],center=true); //airflow fan
+		cylinder (r=38/2,h=10,center=true);
+		union (){ //screw holes
+			translate ([25,25,-40]) cylinder (r=3.25/2,h=20);
+			translate ([-25,-25,-40]) cylinder (r=3.25/2,h=20);
+			translate ([25,-25,-40]) cylinder (r=3.25/2,h=20);
+			translate ([-25,25,-40]) cylinder (r=3.25/2,h=20);
+		}
+		translate ([0,0,7]) union (){ //nut wells
+			translate ([25,25,-40]) cylinder (r=5.6/2,h=20);
+			translate ([-25,-25,-40]) cylinder (r=5.6/2,h=20);
+			translate ([25,-25,-40]) cylinder (r=5.6/2,h=20);
+			translate ([-25,25,-40]) cylinder (r=5.6/2,h=20);
+		}
+  
+	}
+	union (){ //joint strengthener
+		translate ([19,19,-1]) sphere (r=4);
+		translate ([-19,-19,-1]) sphere (r=4);
+		translate ([19,-19,-1]) sphere (r=4);
+		translate ([-19,19,-1]) sphere (r=4);
+	}
+
+	}
+}
+*/
