@@ -15,10 +15,10 @@ $fn=32;
 
 
 //motor for printing
-bracket(motor=true);
+//bracket(motor=true);
 
 //idler for mounting on the bottom
-//bracket(motor=false, push=true);
+bracket(motor=false, push=true);
 //translate ([0,-60,0]) idler(push=true);
 //translate([0,0,sb_width/2]) rotate([0,90,0]) switch_bracket_screwed();
 
@@ -98,14 +98,13 @@ module idler_mount(push = false){
     translate([0,0,height+wall/2]) cylinder(r=bolt_cap_rad, h=wall*2,center=true);
     translate([0,0,height-wall/2+.3+.5]) cylinder(r=bolt_rad, h=wall*2+1,center=true);
     if(push){
-      translate([0,0,height/2-wall*3.5]) cylinder(r=20, h=height,center=true, $fn=4);
+      translate([0,0,height/2-wall*2-nut_height-.3]) cylinder(r=20, h=height,center=true, $fn=4);
 
-      translate([0,0,height-wall*2+1]) cylinder(r=bolt_rad, h=wall,center=true);
+      translate([0,0,height-wall*1.75-nut_height/2]) cylinder(r=bolt_rad, h=nut_height+wall/2,center=true);
     
-      translate([0,0,height-wall*3+nut_height/2+.3]) rotate([0,0,30]) cylinder(r=nut_rad, h=nut_height+.1, center=true, $fn=6);
-      translate([0,3,height-wall*3+nut_height/2+.3]) rotate([0,0,30]) cylinder(r=nut_rad, h=nut_height+.1, center=true, $fn=6);
-
-      translate([0,0,height-wall*3+.3]) rotate([0,0,30]) cylinder(r=bolt_rad, h=5, center=true, $fn=6);
+	  translate([0,0,height-wall*1.5-nut_height/2]) rotate([0,0,30]) cylinder(r=nut_rad, h=nut_height+.1, center=true, $fn=6);
+	  #translate([0,4,height-wall*1.5-nut_height/2]) rotate([0,0,30]) cylinder(r=nut_rad, h=nut_height+.1, center=true, $fn=6);
+      //translate([0,0,height-wall*3+.3]) rotate([0,0,30]) cylinder(r=bolt_rad, h=5, center=true, $fn=6);
     }else{
       translate([0,0,height/2-wall*2.5]) cylinder(r=20, h=height,center=true, $fn=4);
     }
