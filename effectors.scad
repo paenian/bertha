@@ -313,12 +313,12 @@ module arm_mounts(solid = 1){
 		translate([-arm_rad-6,0,0]) cube([20,25,arm_sep],center=true);
 
 		//make sure the rod can't hit anything
-		#render() for(i=[0,1]) mirror([0,0,i]) translate([0,0,arm_sep/2+rod_end_thickness/2]) rod_end_sweep();
+		render() for(i=[0,1]) mirror([0,0,i]) translate([0,0,arm_sep/2+rod_end_thickness/2]) rod_end_sweep();
 	}
 }
 
 module rod_end_sweep(){
-	#difference(){
+	%difference(){
 		sphere(r=9.5, $fn=36);
 		for(i=[0,1]) mirror([0,0,i]) translate([0,0,rod_end_thickness/2-.1]) cylinder(r1=igus_rad, r2=36, h=((36-igus_rad)/2)/sqrt(3),$fn=12);
 	}
