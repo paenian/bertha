@@ -23,13 +23,15 @@ rail_offset = 10;
 //%rotate([0,0,30]) cylinder(r=center_rad/cos(60), h=1, $fn=3);
 
 
-rail_effector();
+//translate([80,0,0])
+//rail_effector();
 //adjustable_wheel();
-//hotend_effector();
+hotend_effector();
 //translate([0,33,0])
 //hotend_clamp();
 //translate([0,-33,0]) rod_end();
 //fan_mount();
+
 
 module hotend_effector(){
 	difference(){
@@ -39,12 +41,10 @@ module hotend_effector(){
 
 			//arms
 			for(i=[0:120:359]) rotate([0,0,i])
-				translate([0,radius,height]) arm_mounts_outer(1);
+				translate([0,radius,height]) arm_mounts(1);
 
 			//arm supports
-			for(i=[0:120:359]) rotate([0,0,i])
-				//translate([0,-radius,0]) rotate([30,0,0]) ybar(6.9, height+9);
-				translate([0,-radius,0]) rotate([30,0,0]) translate([0,0,-.5]) ybar(13, height+6);
+			arm_supports();
 
 
 			//extruder mounts
@@ -52,16 +52,16 @@ module hotend_effector(){
 				translate([0,extruder_rad,0]) extruder_mount(1);
 
 			//fan diverter
-			fan_shroud();
+			//fan_shroud();
 
 			//anchor
-			#for(i=[0:120:359]) rotate([0,0,i])
-				translate([-wall/4,0,0]) cube([wall/2,extruder_rad/2,wall/2]);
+			//for(i=[0:120:359]) rotate([0,0,i])
+			//	translate([-wall/4,0,0]) cube([wall/2,extruder_rad/2,7.5]);
 		}
 
 		//arms
 		for(i=[0:120:359]) rotate([0,0,i])
-			translate([0,radius,height]) arm_mounts_outer(0);
+			translate([0,radius,height]) arm_mounts(0);
 
 		//extruder mounts
 		for(i=[0:120:359]) rotate([0,0,i])
@@ -69,6 +69,21 @@ module hotend_effector(){
 
 		//clean up the bottom
 		translate([0,0,-50]) cube([100,100,100],center=true);
+	}
+}
+
+module arm_supports(){
+	ring_rad = radius*sqrt(3)-arm_sep/2+cone_height;
+	intersection(){
+		rotate([0,0,30]) cylinder(r1=extruder_rad/cos(60), r2=(radius+wall*1.5)/cos(60), h=height+wall-.25,$fn=3);
+		union() for(i=[0:120:359]) rotate([0,0,i])
+			translate([0,-radius*2,height/2]) difference(){
+				union(){
+					cylinder(r=ring_rad+wall*2,h=height+wall*2, center=true);
+					translate([0,ring_rad+wall*2,0]) cylinder(r=wall, h=height+wall*2, center=true, $fn=6);
+				}
+				cylinder(r=ring_rad,h=height+wall*2+1, center=true);
+			}
 	}
 }
 
@@ -92,7 +107,7 @@ module hexamid(){
 }
 
 mount_height = 15;
-mount_width = 75;
+mount_width = 60;
 
 module extruder_mount(solid = 1){
 	if(solid){
@@ -301,9 +316,11 @@ echo(cone_height);
 module arm_mounts(solid = 1){
 	rotate([0,90,0])
 	if(solid){
-		cube();
-		cylinder(r=arm_rad, h=arm_sep-cone_height*2, center=true, $fn=36);
-		for(i=[0,1]) mirror([0,0,i]) translate([0,0,arm_sep/2-cone_height]) cylinder(r1=arm_rad, r2=igus_rad, h=cone_height, $fn=36);
+		//cylinder(r=arm_rad, h=arm_sep-cone_height*2, center=true, $fn=36);
+		for(i=[0,1]) mirror([0,0,i]){
+			translate([0,0,arm_sep/2-cone_height-wall]) cylinder(r=arm_rad, h=wall*2, center=true, $fn=36);
+			translate([0,0,arm_sep/2-cone_height]) cylinder(r1=arm_rad, r2=igus_rad, h=cone_height, $fn=36);
+		}
 	}else{
 		//nut slot
 		for(i=[0,-nut_rad]) translate([i,0,-.01]) cylinder(r=nut_rad, h=arm_sep-cone_height*2-wall*2, center=true, $fn=6);
@@ -317,9 +334,9 @@ module arm_mounts(solid = 1){
 	}
 }
 
-module rod_end_sweep(){
+module rod_end_sweep(rad=9.5){
 	%difference(){
-		sphere(r=9.5, $fn=36);
+		sphere(r=rad, $fn=36);
 		for(i=[0,1]) mirror([0,0,i]) translate([0,0,rod_end_thickness/2-.1]) cylinder(r1=igus_rad, r2=36, h=((36-igus_rad)/2)/sqrt(3),$fn=12);
 	}
 }
