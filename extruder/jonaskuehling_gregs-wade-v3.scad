@@ -50,16 +50,16 @@ less_idler_bolt_dist = 0;
 //wade(hotend_mount=arcol_mount, legacy_mount=false);
 //wade(hotend_mount=grrf_peek_mount, legacy_mount=false);
 
-//wade(hotend_mount=eigthmpt, legacy_mount=false);
+//translate([80,0,0]) mirror([1,0,0]) wade(hotend_mount=eigthmpt, legacy_mount=false);
 
 ////////// RENDER BEARING WASHER ///////////////////////////////////////////////////
-*translate([-15,45,0])								// POSITIONING
-	bearing_washer();
+//translate([15,80,0])								// POSITIONING
+//	bearing_washer();
 
 
 ////////// RENDER IDLER /////////////////////////////////////////////////////////////////////
-translate([78+extra_gear_separation,-10,16.20])		// POSITIONING
-	rotate([0,-90,0])
+translate([90+extra_gear_separation,95,16.20])		// POSITIONING
+	rotate([90,-90,0])
 		wadeidler();
 
 
@@ -171,7 +171,7 @@ hole_for_608=22.6;
 block_top_right=[wade_block_width,wade_block_height];
 
 layer_thickness=0.25;
-filament_feed_hole_d=3.5;
+filament_feed_hole_d=2.25;
 filament_diameter=3;
 filament_feed_hole_offset=filament_diameter+1.5;
 idler_nut_trap_depth=7.3;
@@ -465,7 +465,10 @@ module block_holes(legacy_mount=false){
 			translate([-filament_feed_hole_offset,0,wade_block_depth/2])
 			rotate([90,0,0])
 			rotate(360/16)
-			cylinder(r=filament_feed_hole_d/2,h=wade_block_depth*3,center=true,$fn=8);	
+			union(){
+				cylinder(r=filament_feed_hole_d/2,h=wade_block_depth*3,center=true,$fn=8);
+				translate([0,0,7]) cylinder(r1=filament_feed_hole_d, r2 = filament_feed_hole_d/2,h=5,center=true,$fn=8);
+			}
 
 			//Widened opening for hobbed bolt access.
 			// EDIT jonaskuehling: removed for better stability around tilt screw nut traps
@@ -606,7 +609,7 @@ module wadeidler(){
 	
 				//Filament Guide.
 				translate([guide_height/2+idler_height/2-1,idler_long_side/2-guide_length/2,0])
-				cube([guide_height+1,guide_length,8],center=true);
+				cube([guide_height+1,guide_length,9],center=true);
 			}
 
 			// The fulcrum Hinge
@@ -620,10 +623,10 @@ module wadeidler(){
 	
 		//Filament Path	
 		translate(idler_axis+[2+guide_height,+idler_long_side-idler_long_bottom-guide_length/2,0]){
-			cube([7,guide_length+2,3.5],center=true);
+			cube([7,guide_length+2,filament_feed_hole_d],center=true);
 			translate([-7/2,0,0])
 			rotate([90,0,0])
-			cylinder(h=guide_length+4,r=3.5/2,center=true,$fn=16);
+			#cylinder(h=guide_length+4,r=filament_feed_hole_d/2,center=true,$fn=16);
 		}
 
 
@@ -881,7 +884,7 @@ module peek_reprapfaborg_holes(){
 
 module eigthmpt_mount_holes(){
 	tap_rad=9/2; 
-	extruder_recess_h=7;
+	extruder_recess_h=10;
 
 	// Recess in base
 	translate([0,0,-1])
@@ -893,5 +896,5 @@ module eigthmpt_mount_holes(){
 
 	//view/tap slot
 	translate([-tap_rad*3+1,0,extruder_recess_h-1])
-	cube([tap_rad*8, tap_rad*2+1, 2.1],center=true);
+	cube([tap_rad*8, tap_rad*2+1, 3.5],center=true);
 }

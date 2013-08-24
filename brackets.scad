@@ -15,10 +15,10 @@ $fn=32;
 
 
 //motor for printing
-//bracket(motor=true);
+bracket(motor=true);
 
 //idler for mounting on the bottom
-bracket(motor=false, push=true);
+//bracket(motor=false, push=true);
 //translate ([0,-60,0]) idler(push=true);
 //translate([0,0,sb_width/2]) rotate([0,90,0]) switch_bracket_screwed();
 
@@ -114,15 +114,17 @@ module idler_mount(push = false){
 //idler slider
 //Fits in the slot made above.  Has a nut trap on the outside, and a sloped ridge on the inside for the bearing to ride on.  Bolt goes through bearing into nut trap - with washers added if needed for adjustment.
 module idler(push=false){
+  idler_height = 2/3*height;
+
   translate([0,(radius+wall)*cos(30)-wall,0])
   rotate([-90,0,0])
   translate([0,-wall,0])
   difference(){
     union(){
       //body
-      intersection(){
-        translate([0,0,height/3]) cylinder(r=20-.5, h=height*2/3,center=true, $fn=4);
-		  translate([0,0,height/3]) cube([40,wall*2,height*2/3],center=true);
+      #intersection(){
+        translate([0,0,idler_height/2]) cylinder(r=20-.5, h=idler_height,center=true, $fn=4);
+		  translate([0,0,idler_height/2]) cube([40,wall*2,idler_height],center=true);
       }
 
       //idler support
