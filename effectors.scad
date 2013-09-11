@@ -10,14 +10,16 @@ rod_end_thickness = 8;
 //translate([0,0,65]) cube([40,40,10],center=true);
 //translate([0,36,20]) cube([40,10,40],center=true);
 
-$fn=36;
-height = 40;
-radius = 40;
+$fn=90;
+height = 20;		//40
+radius = 40;		//40
 extruder_rad = 25;
 center_rad = 15;
 igus_rad = 6/2;
 shroud_height = 40;	//height of fan shroud.  Adjust based on extruder.
 rail_offset = 10;
+
+//cube([12,200,50], center=true);
 
 //%translate([0,0,0]) cylinder(r=extruder_rad, h=1);
 //%rotate([0,0,30]) cylinder(r=center_rad/cos(60), h=1, $fn=3);
@@ -55,8 +57,8 @@ module hotend_effector(){
 			//fan_shroud();
 
 			//anchor
-			//for(i=[0:120:359]) rotate([0,0,i])
-			//	translate([-wall/4,0,0]) cube([wall/2,extruder_rad/2,7.5]);
+			*for(i=[0:120:359]) rotate([0,0,i])
+				translate([-wall/4,0,0]) cube([wall/2,extruder_rad/2,15]);
 		}
 
 		//arms
@@ -67,22 +69,36 @@ module hotend_effector(){
 		for(i=[0:120:359]) rotate([0,0,i])
 			translate([0,extruder_rad,0]) extruder_mount(0);
 
+		//reprap logo
+		*for(i=[0:120:359]) rotate([0,0,i])
+			translate([0,0,height/2+wall]) rotate([90,0,0]) teardrop(8,radius*2);
+		
+
 		//clean up the bottom
 		translate([0,0,-50]) cube([100,100,100],center=true);
 	}
 }
 
+module teardrop(r, h) {
+  rotate([0,0,45]) 
+  union () {
+    cube([r,r,h]);
+    cylinder(r=r, h=h);
+  }
+}
+
 module arm_supports(){
 	ring_rad = radius*sqrt(3)-arm_sep/2+cone_height;
 	intersection(){
-		rotate([0,0,30]) cylinder(r1=extruder_rad/cos(60), r2=(radius+wall*1.5)/cos(60), h=height+wall-.25,$fn=3);
+		rotate([0,0,30]) cylinder(r1=extruder_rad/cos(60), r2=(radius+wall*2+bolt_rad)/cos(60), h=height,$fn=3);
+		rotate([0,0,30]) cylinder(r1=(radius+bolt_rad)/cos(60), r2=(radius+bolt_rad)/cos(60), h=height,$fn=3);
 		union() for(i=[0:120:359]) rotate([0,0,i])
 			translate([0,-radius*2,height/2]) difference(){
 				union(){
-					cylinder(r=ring_rad+wall*2,h=height+wall*2, center=true);
-					translate([0,ring_rad+wall*2,0]) cylinder(r=wall, h=height+wall*2, center=true, $fn=6);
+					cylinder(r2=ring_rad+wall+nut_height,r1=ring_rad+wall+nut_height,h=height+wall*2, center=true);
+					translate([0,ring_rad+wall*1.5,0]) cylinder(r=wall*1.5, h=height+wall*2, center=true, $fn=6);
 				}
-				cylinder(r=ring_rad,h=height+wall*2+1, center=true);
+				cylinder(r2=ring_rad,r1=ring_rad+2,h=height+wall*2+1, center=true);
 			}
 	}
 }
@@ -100,7 +116,7 @@ module hexamid(){
 		}
 
 		//translate([0,0,-wall]) rotate([0,0,-30]) cylinder(r1=body_rad/cos(180/3), r2=0, height, $fn=3);
-		#translate([0,0,0]) sphere(r=36, $fn=36);
+		sphere(r=36, $fn=36);
 
 		rotate([0,0,30]) cylinder(r=center_rad/2+wall, h=100, $fn=3);
 	}
@@ -112,7 +128,7 @@ mount_width = 60;
 module extruder_mount(solid = 1){
 	if(solid){
 		translate([-mount_width/2,-wall*2,0]) cube([mount_width,wall*2,mount_height]);
-		cylinder(r=hotend_rad+wall, h=mount_height, $fn=18);
+		cylinder(r=(hotend_rad+wall)/cos(30), h=mount_height, $fn=6);
 	}else{
 		union(){
 			//shore up the front
@@ -125,7 +141,7 @@ module extruder_mount(solid = 1){
 			//bolt slots
 			render() for(i=[0,1]) mirror([i,0,0]){
 				translate([hotend_rad+bolt_dia,0,mount_height/2]) rotate([-90,0,0]) cylinder(r=bolt_rad, h=wall*3, center=true);
-				translate([hotend_rad+bolt_dia,-wall*2-.1,mount_height/2]) rotate([-90,0,0]) cylinder(r=nut_rad, h=nut_height+.2, $fn=6);
+				translate([hotend_rad+bolt_dia,-wall*2-.1-wall,mount_height/2]) rotate([-90,0,0]) rotate([0,0,30]) cylinder(r=nut_rad, h=nut_height+wall, $fn=6);
 
 				//translate([hotend_rad+bolt_dia,0,mount_height]) rotate([-90,0,0]) cylinder(r=bolt_rad, h=wall*2, center=true);
 				//translate([hotend_rad+bolt_rad,-wall*2/2,mount_height/2]) cube([bolt_dia,wall*2+.02,mount_height/2]);
@@ -318,7 +334,7 @@ module arm_mounts(solid = 1){
 	if(solid){
 		//cylinder(r=arm_rad, h=arm_sep-cone_height*2, center=true, $fn=36);
 		for(i=[0,1]) mirror([0,0,i]){
-			translate([0,0,arm_sep/2-cone_height-wall]) cylinder(r=arm_rad, h=wall*2, center=true, $fn=36);
+			translate([0,0,arm_sep/2-cone_height-(wall+nut_height)/2]) cylinder(r=arm_rad, h=wall+nut_height, center=true, $fn=36);
 			translate([0,0,arm_sep/2-cone_height]) cylinder(r1=arm_rad, r2=igus_rad, h=cone_height, $fn=36);
 		}
 	}else{
