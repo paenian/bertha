@@ -11,9 +11,9 @@ bearing_core = 8/2;
 bearing_rim = 12/2;
 lock_lip = .25;
 
-rod_end_length = 40;
-rod_end_thickness = 8.25;
-
+rod_end_length = 30;
+rod_end_thickness = 8.5;
+rod_end_gap = 20;
 
 rim = -.05;
 
@@ -36,10 +36,9 @@ in = 2;
 //miniujoint(sep = .4, sphere=12, inset = in);
 //ujointarm(sep = .4, sphere=12, inset = in, slop = .5);
 
-%cube([5,27,5],center=true);
 //rotate([0,-90,0]) 
-triplebearing();
-//triplebearingarm(sep = 2, sphere=10, inset = in, slop = .5);
+//triplebearing();
+triplebearingarm(sep = 2, sphere=10, inset = in, slop = .5);
 
 //doublebearing();
 
@@ -93,7 +92,7 @@ module triplebearing(){
 		
 		//center bearing cutout
 		rotate([0,90,0]) tiny_bearing(0,0,wall,2);
-		
+
 		//flatten
 		translate([0,0,-bearing_sep-bolt_rad/2-.5]) cube([bearing_sep*2, bearing_sep*2, bearing_sep*2],center=true);
 	}
@@ -102,7 +101,7 @@ module triplebearing(){
 module triplebearingarm(sep = 0, sphere = 10, slop=.25){
   bearing_rad = 5.2;
 	bearing_thick = 4;
-	wall = 3;
+	wall = 2.5;
 
 	height = bearing_rad*2+wall*2+1;
 
@@ -110,92 +109,76 @@ module triplebearingarm(sep = 0, sphere = 10, slop=.25){
 	echo("Dist between bearings:",bearing_sep);//15.5 now
 
 	width = bearing_rad*2+bearing_thick*2+sep*2;
+	
+	facets = 8;
 
 difference(){
 	difference(){
 		union(){
+			//the bearings themselves
 			hull(){
 				for(i=[0,1]) mirror([0,i,0]){
-					rotate([-90,0,0]) cylinder(r=height/2/cos(30), h=bearing_sep+wall+bearing_thick*2, center=true, $fn=6);
-					
 					translate([0,bearing_sep/2+bearing_thick/2,0]) rotate([90,90,0]) tiny_bearing(1,1,wall,0);
-					
+					translate([-height*3/4,(bearing_sep+bearing_thick*2-height/2)/2,-height/4]) sphere(r=height/4, $fn=facets);
 				}
+	
+				rotate([-90,0,0]) cylinder(r=height/2, h=bearing_sep+wall+bearing_thick*2, center=true);
+	
+				//translate([-height*3/4,0,-height/4]) rotate([90,0,0]) cylinder(r=height/4, h=bearing_sep+wall+bearing_thick*2, center=true);
+			}
+
+			//the arm grabber
+			hull(){
+				//sphere(r=sphere+slop);
+				//translate([-bearing_sep/2,0,0]) sphere(r=sphere-2);
+				//#translate([-height*3/4,0,-height/4]) rotate([90,0,0]) cylinder(r=height/4, h=bearing_sep+wall+bearing_thick*2, center=true);
+
+				for(i=[0,1]) mirror([0,i,0])
+					translate([-height*3/4,(bearing_sep+bearing_thick*2-height/2)/2,-height/4]) sphere(r=height/4, $fn=facets);
+		
+				//([wall,width+wall+.6,height/2], center=true);
 			
-				//add the arm grabber
-				translate([-rod_end_length/2,0,0]) cube([rod_end_length,rod_end_thickness+wall,height], center=true);
+				rotate([45,0,0]) translate([-rod_end_length/2-rod_end_gap,0,0]) cube([rod_end_length,height*sqrt(2)/2,height*sqrt(2)/2], center=true);
 			}
 		}
 
 		for(i=[0,1]) mirror([0,i,0]){
-			translate([0,bearing_sep/2+bearing_thick/2,0]) rotate([90,90,0]) tiny_bearing(0,1,wall,0);
-		
-			//bearing hole
-			*hull(){
-				translate([0,bearing_sep/2,0]) rotate([-90,0,0]) cylinder(r=bearing_rad*cos(180/$fn)+.1, h=bearing_thick);
-				translate([0,bearing_sep/2,-10]) rotate([-90,0,0]) cylinder(r=bearing_rad*cos(180/$fn)+.1, h=bearing_thick);
-			}
-			//center hole
-			*difference(){
-				translate([0,bearing_sep/2,0]) rotate([-90,0,0]) cylinder(r=8/2, h=bearing_thick+1.1);
-				translate([0,bearing_sep/2+1,-6]) cube([10,10,10], center=true);
-			}
-
-			//teardrop the top
-			*intersection(){
-				translate([0,bearing_sep/2,0]) rotate([-90,-135,0]) cube([bearing_rad*cos(180/$fn)+.1,bearing_rad*cos(180/$fn)+.1,bearing_thick]);
-				translate([0,bearing_sep/2,0]) rotate([-90,180/8,0]) cylinder(r=(bearing_rad*cos(180/$fn)+.1)/cos(180/8),h=10, $fn=8);
-			}
+			translate([0,bearing_sep/2+bearing_thick/2,0]) rotate([90,90,0]) tiny_bearing(0,1,wall,2);
 
 			//make a zip tie slot
-			translate([0,bearing_sep/2+wall-.5,0]) rotate([90,0,0]) rotate_extrude(convexity = 10){
+			*translate([0,bearing_sep/2+wall-.5,0]) rotate([90,0,0]) rotate_extrude(convexity = 10){
 				translate([bearing_rad+1.5+.7, .5, 0]) scale([1,1]) rotate(a=30) circle(r=1, center=true, $fn=6);
 				translate([bearing_rad+1.5+.7, -.5, 0]) scale([1,1]) rotate(a=30) circle(r=1, center=true, $fn=6);
 			}
 		}
 
 		//hole for the arm
-		translate([-rod_end_length/2,0,0]) cube([rod_end_length+1,8.2,8.2], center=true);
+		rotate([45,0,0]) translate([-(rod_end_length+1)/2-rod_end_gap,0,0]) cube([rod_end_length+1,rod_end_thickness,rod_end_thickness], center=true);
 
 		//hollow out the joint itself
 		hull(){
 			//translate([-bearing_sep/2,0,0]) 
 			intersection(){
 				sphere(r=sphere+slop);
-				cube([width*2, sphere*2-4, width*2], center=true);
+				cube([width*2, sphere*2-4.5, width*2], center=true);
 			}
-			translate([-bearing_sep/2,0,0]) sphere(r=sphere-2);
-	
-			translate([bearing_sep/2,0,0]) intersection(){
-				sphere(r=sphere+slop);
-				cube([width*2, sphere*2-4, width*2], center=true);
-			}
-
-			//slope the bearing insert path
-			*intersection(){
-				translate([0,0,-bearing_rad/2-wall/4]) rotate([0,0,45]) cylinder(r2=(sphere*2-4)/2/cos(180/4), r1=(sphere*2)/2/cos(180/4),h=bearing_rad+wall, center=true, $fn=4);
-				translate([wall/2,0,0]) cube([bearing_rad*2+wall,bearing_sep*2,bearing_rad*5], center=true);
-			}
+			//translate([-bearing_sep/2,0,0]) sphere(r=sphere-2);
 		}
 
+		//cut off the back
+		translate([width,0,0]) cube([width*2,width*2,width*2], center=true);
+
 		//nut trap
-		*translate([-bearing_sep-wall/2,0,0]) rotate([90,0,0]){
-			//rotate([0,0,30]) 
-			cylinder(r=nut_rad, h=rod_end_thickness+lock_nut_height*2, center=true, $fn=6);
-			cylinder(r=bolt_rad, h=rod_end_thickness+lock_nut_height*2+wall, center=true);
-			for(i=[0,1])
-				mirror([0,0,i]) translate([0,0,rod_end_thickness/2+lock_nut_height+wall/2-.1]) cylinder(r=bolt_cap_rad, h=rod_end_thickness);
-		}
-		//nut trap
-		translate([-rod_end_length+bolt_rad*2, 0, -rod_end_thickness/2-nut_height]){
-			cylinder(r=nut_rad, h=nut_height+.1, $fn=6);
-			translate([-nut_rad,0,0]) cylinder(r=nut_rad, h=nut_height+.1, $fn=6);
-			cylinder(r=bolt_rad, h=nut_height*2, center=true);
+		rotate([45,0,0]) translate([-rod_end_length+bolt_rad*2, 0, -rod_end_thickness/2-nut_height]){
+			rotate([0,0,30]) cylinder(r=nut_rad, h=nut_height+.1, $fn=6);
+			translate([0,nut_rad,0]) rotate([0,0,30]) cylinder(r=nut_rad, h=nut_height+.1, $fn=6);
+			cylinder(r=bolt_rad, h=nut_height*3, center=true);
 		}
 	}
 
-	//flatten the base
-	translate([0,0,11]) rotate([0,10,0]) cube([100,100,20], center=true);
+	//flatten the top and bottom
+	for(i=[0,1]) mirror([0,0,i])
+		translate([0,0,-height+.5]) cube([200,200,height], center=true);
 
 }
 }
@@ -504,7 +487,7 @@ module tiny_bearing(solid=1, vertical=1, wall = 5, zip=1){
 		}
 
 		if(vertical){
-			rotate([0,0,0]) cylinder(r=bearing_rad+rim, h=bearing_width+wall+.01, center=true, $fn=4);
+			rotate([0,0,0]) cylinder(r=bearing_rad+rim, h=bearing_width+wall+.1, center=true, $fn=4);
 		
 			intersection(){
 				translate([0,0,-(bearing_width+.02)/2]) rotate([0,0,90+45]) cube([bearing_rad, bearing_rad,bearing_width+.02]);
@@ -521,9 +504,12 @@ module tiny_bearing(solid=1, vertical=1, wall = 5, zip=1){
 				translate([-.5,-bearing_rad,-(bearing_width+.02)/2]) rotate([0,0,90]) cube([bearing_rad*2, bearing_rad,bearing_width+.02]);
 			}
 			difference(){
-				rotate([0,0,30]) cylinder(r=bearing_rad+rim, h=bearing_width+wall+.01, center=true, $fn=6);
+				rotate([0,0,0]) cylinder(r=bearing_rad+rim, h=bearing_width+wall+.01, center=true, $fn=4);
 				//translate([bearing_width,0,0]) cube([wall/2,bearing_rad*2,bearing_rad*2], center=true);
 			}
+			//flay the edges a bit
+			for(i=[0,1]) mirror([0,0,i])
+				rotate([0,0,90]) translate([0,0,bearing_width/2-.5]) cylinder(r1=bolt_rad, r2=bolt_cap_rad, h=bolt_cap_rad/2);
 		}
 
 		//make a zip tie slot
