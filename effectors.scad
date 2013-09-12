@@ -377,24 +377,31 @@ module arm_mounts_outer(solid = 1){
 	}
 }
 
-rod_size = 8.4;
-taper = 4;
+rod_size = 8.6;
+taper = 5;
 module rod_end(){
 	translate([0,0,rod_size*cos(30)-1]) rotate([90+taper,0,0])
 	difference(){
-		cylinder(r=rod_size, h=40, $fn=6);
+		cylinder(r=rod_size+.5, h=40, $fn=6);
 
 		//taper
-		for(i=[0:1]) mirror([0,i,0]) translate([-10,rod_size*cos(30)-1,0]) rotate([taper,0,0]) translate([0,0,-1]) cube([20,10,50]);
+		for(i=[0:1]) mirror([0,i,0]) translate([-10,rod_size*cos(30)-.25,0]) rotate([taper,0,0]) translate([0,0,-1]) cube([20,10,50]);
 
 		//carbon fiber hole
-		translate([0,0,-.01]) rotate([0,0,45]) cylinder(r=rod_size/2/cos(180/4), h=20, $fn=4);
+		translate([0,0,-.01]) rotate([0,0,]) cylinder(r=rod_size/2/cos(180/4), h=20, $fn=4);
 
 		//nut hole
 		translate([0,0,22.5]){
 			cylinder(r=bolt_rad, h=20);
-			cylinder(r1=nut_rad+1, r2=nut_rad, h=15, $fn=6);
+			//cylinder(r1=nut_rad+1, r2=nut_rad, h=15, $fn=6);
+			cylinder(r1=bolt_cap_rad+1, r2=bolt_cap_rad, h=15, $fn=32);
 			translate([0,0,7.5]) cube([nut_rad+1,20,15],center=true);
+		}
+		
+		//bolt insertion path
+		translate([0,0,22.5]) hull(){
+			cylinder(r1=bolt_cap_rad+1, r2=bolt_cap_rad+.25, h=5, $fn=32);
+			translate([0,bolt_cap_rad,0]) cylinder(r1=bolt_cap_rad+1, r2=bolt_cap_rad+.25, h=5, $fn=32);
 		}
 	}
 }
