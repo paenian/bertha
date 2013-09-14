@@ -40,36 +40,6 @@ in = 2;
 //triplebearing();
 triplebearingarm(sep = 2, sphere=10, inset = in, slop = .5);
 
-//doublebearing();
-
-module doublebearing(sep = 3, wall=3){
-	bearing_rad = 5.2;
-	bearing_thick = 4;
-
-	offset = bearing_thick/2+wall/2+sep+bearing_rad;
-
-	difference(){
-		union(){
-			rotate([0,90,0]) tiny_bearing(1,0,wall);
-
-			//arms
-			for(i=[0,1]) mirror([0,i,0]) translate([offset/2, bearing_rad+wall/2, 0]) cube([offset+wall/2+bearing_rad+.3, wall, bolt_rad*2+wall],center=true);
-		}
-		rotate([0,90,0]) tiny_bearing(0,0,wall);
-	
-		#translate([offset, 0, 0]) rotate([90,0,0]) cylinder(r=bolt_rad, h=30, center=true);
-
-		#translate([offset, 0, 0]) rotate([90,0,0]) cylinder(r=bearing_rad, h=bearing_thick, center=true);
-
-		//clean up the bottom
-		translate([0,0,-9]) cube([30,30,10], center=true);
-	}
-}
-
-module doublebearingarm(){
-}
-
-
 module triplebearing(){
 	bearing_rad = 5.2;
 	bearing_thick = 4;
@@ -99,9 +69,10 @@ module triplebearing(){
 }
 
 module triplebearingarm(sep = 0, sphere = 10, slop=.25){
-  bearing_rad = 5.2;
+	bearing_rad = 5.2;
 	bearing_thick = 4;
 	wall = 2.5;
+	flat = .5;
 
 	height = bearing_rad*2+wall*2+1;
 
@@ -111,8 +82,8 @@ module triplebearingarm(sep = 0, sphere = 10, slop=.25){
 	width = bearing_rad*2+bearing_thick*2+sep*2;
 	
 	facets = 8;
-
-difference(){
+	
+	translate([0,0,height/2-flat])
 	difference(){
 		union(){
 			//the bearings themselves
@@ -174,13 +145,12 @@ difference(){
 			translate([0,nut_rad,0]) rotate([0,0,30]) cylinder(r=nut_rad, h=nut_height+.1, $fn=6);
 			cylinder(r=bolt_rad, h=nut_height*3, center=true);
 		}
+	
+
+		//flatten the top and bottom
+		for(i=[0,1]) mirror([0,0,i])
+			translate([0,0,-height+flat]) cube([200,200,height], center=true);
 	}
-
-	//flatten the top and bottom
-	for(i=[0,1]) mirror([0,0,i])
-		translate([0,0,-height+.5]) cube([200,200,height], center=true);
-
-}
 }
 
 module ujointarm(sep = 0, sphere = 10, slop=.25){
