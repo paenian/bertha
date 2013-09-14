@@ -12,7 +12,7 @@ bearing_rim = 12/2;
 lock_lip = .25;
 
 rod_end_length = 30;
-rod_end_thickness = 8.5;
+rod_end_thickness = 8.75;
 rod_end_gap = 20;
 
 rim = -.05;
@@ -22,7 +22,7 @@ rim = -.05;
 
 //%arm_mounts();
 //bearing_arm(35,3);
-$fn=32;
+$fn=64;
 
 //bearing_arm_hex(25);
 
@@ -36,47 +36,60 @@ in = 2;
 //miniujoint(sep = .4, sphere=12, inset = in);
 //ujointarm(sep = .4, sphere=12, inset = in, slop = .5);
 
-//rotate([0,-90,0]) 
-//triplebearing();
-triplebearingarm(sep = 2, sphere=10, inset = in, slop = .5);
+//rotate([0,-45,0]) 
+triplebearing();
+triplebearingarm(sep = 2, sphere=9.5, inset = in, slop = .5);
 
 module triplebearing(){
 	bearing_rad = 5.2;
 	bearing_thick = 4;
 	wall = 3;
 
-	bearing_sep = bearing_rad*2+wall+2.1;
+	offset = 0;
+
+	bearing_sep = bearing_rad*2+wall+2.1-1.5;
 	echo("Dist between bearings:",bearing_sep);
 
+	translate([-offset,0,0]) 
 	difference(){
 		union(){
 			//bar
-			rotate([90,0,0]){
-				cylinder(r=bolt_rad-.25, h=bearing_sep+bearing_thick*2-1, center=true);
-				cylinder(r=bearing_rad-1.75, h=bearing_sep, center=true);
+			difference(){
+				translate([offset,0,0]) rotate([90,0,0]){
+					cylinder(r=bolt_rad-.25, h=bearing_sep+bearing_thick*2-1, center=true);
+					cylinder(r=bearing_rad-1.75, h=bearing_sep, center=true);
+				}
+				rotate([0,90,0]) cylinder(r=bolt_cap_rad+.25, h=10);
 			}
-			
+
+			//bearings
+			rotate([0,90,0]) cylinder(r=bearing_sep/2, h=bearing_thick*2-1, center=true);
 			//center bearing
-			rotate([0,90,0]) tiny_bearing(1,0,wall,1);
+			*rotate([0,90,0]) tiny_bearing(1,0,wall,1);
 		}
 		
 		//center bearing cutout
-		rotate([0,90,0]) tiny_bearing(0,0,wall,2);
+		union(){
+//			for(i=[0,1]) mirror([i,0,0])
+				//translate([bearing_thick/2+wall/4,0,0]) 
+				rotate([0,90,0]) tiny_bearing(0,0,wall,2,0);
+		}
 
 		//flatten
-		translate([0,0,-bearing_sep-bolt_rad/2-.5]) cube([bearing_sep*2, bearing_sep*2, bearing_sep*2],center=true);
+		translate([0,0,-bearing_sep-bolt_rad/2-.75]) cube([bearing_sep*2, bearing_sep*2, bearing_sep*2],center=true);
 	}
 }
 
 module triplebearingarm(sep = 0, sphere = 10, slop=.25){
 	bearing_rad = 5.2;
 	bearing_thick = 4;
-	wall = 2.5;
-	flat = .5;
+	wall = 3;
 
-	height = bearing_rad*2+wall*2+1;
+	offset = 0;
 
-	bearing_sep = bearing_rad*2+wall+2.1;
+	height = bearing_rad*2+wall*2;
+
+	bearing_sep = bearing_rad*2+wall+2.1-1.5;
 	echo("Dist between bearings:",bearing_sep);//15.5 now
 
 	width = bearing_rad*2+bearing_thick*2+sep*2;
@@ -89,7 +102,7 @@ module triplebearingarm(sep = 0, sphere = 10, slop=.25){
 			//the bearings themselves
 			hull(){
 				for(i=[0,1]) mirror([0,i,0]){
-					translate([0,bearing_sep/2+bearing_thick/2,0]) rotate([90,90,0]) tiny_bearing(1,1,wall,0);
+					translate([0,bearing_sep/2+bearing_thick/2,0]) rotate([90,90,0]) tiny_bearing(1,1,wall-1,0);
 					translate([-height*3/4,(bearing_sep+bearing_thick*2-height/2)/2,-height/4]) sphere(r=height/4, $fn=facets);
 				}
 	
@@ -109,7 +122,7 @@ module triplebearingarm(sep = 0, sphere = 10, slop=.25){
 		
 				//([wall,width+wall+.6,height/2], center=true);
 			
-				rotate([45,0,0]) translate([-rod_end_length/2-rod_end_gap,0,0]) cube([rod_end_length,height*sqrt(2)/2,height*sqrt(2)/2], center=true);
+				rotate([45,0,0]) translate([-rod_end_length/2-rod_end_gap,0,0]) cube([rod_end_length,rod_end_thickness+wall*2,rod_end_thickness+wall*2], center=true);
 			}
 		}
 
@@ -133,6 +146,11 @@ module triplebearingarm(sep = 0, sphere = 10, slop=.25){
 				sphere(r=sphere+slop);
 				cube([width*2, sphere*2-4.5, width*2], center=true);
 			}
+			
+			translate([-offset,0,0]) intersection(){
+				sphere(r=sphere+slop);
+				cube([width*2, sphere*2-4.5, width*2], center=true);
+			}
 			//translate([-bearing_sep/2,0,0]) sphere(r=sphere-2);
 		}
 
@@ -145,7 +163,11 @@ module triplebearingarm(sep = 0, sphere = 10, slop=.25){
 			translate([0,nut_rad,0]) rotate([0,0,30]) cylinder(r=nut_rad, h=nut_height+.1, $fn=6);
 			cylinder(r=bolt_rad, h=nut_height*3, center=true);
 		}
-	
+	}
+
+	//flatten the top and bottom
+	for(i=[0,1]) mirror([0,0,i])
+		translate([0,0,-height+1]) cube([200,200,height], center=true);
 
 		//flatten the top and bottom
 		for(i=[0,1]) mirror([0,0,i])
@@ -440,7 +462,7 @@ module hex_bearing(solid=1, vertical=1, wall = 5){
 
 
 
-module tiny_bearing(solid=1, vertical=1, wall = 5, zip=1){
+module tiny_bearing(solid=1, vertical=1, wall = 5, zip=1, insert=1){
 	bearing_rad = 5.2;
 	bearing_width = 4;
 
@@ -453,7 +475,7 @@ module tiny_bearing(solid=1, vertical=1, wall = 5, zip=1){
 		//hollow out the center
 		hull(){
 			cylinder(r=bearing_rad/(cos(180/$fn)), h=bearing_width+.02, center=true);
-			if(!vertical) translate([bearing_rad*2,0,0]) cylinder(r=bearing_rad/(cos(180/$fn)), h=bearing_width+.02, center=true);
+			if(insert) if(!vertical) translate([bearing_rad*2,0,0]) cylinder(r=bearing_rad/(cos(180/$fn)), h=bearing_width+.02, center=true);
 		}
 
 		if(vertical){
@@ -492,7 +514,7 @@ module tiny_bearing(solid=1, vertical=1, wall = 5, zip=1){
 
 		if(zip==2){
 			for(i=[0,1]){
-				mirror([0,i,0]) translate([0, bearing_rad+1, 0]) cube([20,1.1,3], center=true);
+				mirror([0,i,0]) translate([0, bearing_rad+wall/2, 0]) cube([20,1.5,3], center=true);
 			}
 		}
 	}
