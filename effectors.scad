@@ -420,7 +420,7 @@ module rod_end(){
 
 module fan_mount(){
 	//these settings are for 40mm fan
-	hole = 38/2;
+	hole = 39/2;
 	screws = 45/2;
 	bracket = 50;
 	screw_rad = 3.2/2;
@@ -432,6 +432,8 @@ module fan_mount(){
 	//screw_rad = 3.2/2;
 
 	mount_height = 30;
+	scoop_height = 30;
+	thick = 2;
 
 	
 
@@ -446,9 +448,25 @@ module fan_mount(){
 	translate([0,0,mount_height]) mirror([0,0,1])
 	difference(){
 		union(){
-			rotate([0,0,30]) cylinder(r1=center_rad/cos(60)+wall/2, r2=center_rad, h=mount_height, $fn=3);
-			
-			cylinder(r2=hole+wall/2, r1=extruder_rad-hotend_rad-wall/2, h=mount_height);
+			//funnel to bottom
+			intersection(){
+				rotate([0,0,30]) cylinder(r1=11.5/cos(180/3), r2=center_rad, h=mount_height, $fn=3);
+				cylinder(r1=11.5/cos(180/64)+4, r2=center_rad, h=mount_height, $fn=64);
+			}
+
+			//straight
+			translate([0,0,-wall*3]) intersection(){
+				rotate([0,0,30]) cylinder(r=11.5/cos(180/3), h=wall*3, $fn=3);
+				cylinder(r=11.5/cos(180/64)+4, h=wall*3, $fn=64);
+			}
+
+			//taper to fan
+			intersection(){
+				rotate([0,0,30]) cylinder(r1=11.5/cos(180/3), r2=center_rad, h=mount_height, $fn=3);
+				cylinder(r1=11.5/cos(180/64)+4, r2=center_rad, h=mount_height, $fn=64);
+			}
+
+			cylinder(r2=hole+thick, r1=extruder_rad-hotend_rad-wall, h=mount_height);
 
 			rotate([0,0,45]) translate([0,0,mount_height-wall/2]) cylinder(r=20/cos(180/4), h=wall/2, $fn=4);
 
@@ -460,11 +478,23 @@ module fan_mount(){
 		//cutout the air path
 		difference(){
 			union() translate([0,0,-.1]) {
-				cylinder(r2=hole, r1=extruder_rad-hotend_rad-wall, h=mount_height+1);
-				rotate([0,0,30]) cylinder(r1=center_rad/cos(60)-wall/2, r2=center_rad-wall, h=mount_height+.2, $fn=3);
+				cylinder(r2=hole, r1=extruder_rad-hotend_rad-wall-thick, h=mount_height+1);
+	
+				//straight
+				translate([0,0,-wall*3+.05]) intersection(){
+					rotate([0,0,30]) cylinder(r=11.5/cos(180/3)-thick, h=wall*3, $fn=3);
+					cylinder(r=11.5/cos(180/64)+4-thick, h=wall*3+.1, $fn=64);
+				}
+
+				//taper to fan
+				intersection(){
+					rotate([0,0,30]) cylinder(r1=11.5/cos(180/3)-thick, r2=center_rad-thick, h=mount_height, $fn=3);
+					cylinder(r1=11.5/cos(180/64)+4-thick, r2=center_rad-wall/2, h=mount_height, $fn=64);
+				}				
 			}
+
 			for(i=[0:120:359])
-				rotate([0,0,i+90]) translate([extruder_rad,0,0]) rotate([0,0,30]) sphere(r=(hotend_rad+wall-.5+wall/2)/cos(30), $fn=6);
+				rotate([0,0,i+30]) translate([0,-thick/2,-mount_height*3]) cube([30,thick,mount_height*6]);
 		}
 
 		//coutout around the hotends
