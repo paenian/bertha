@@ -434,6 +434,8 @@ module fan_mount(){
 	mount_height = 30;
 	scoop_height = 30;
 	thick = 2;
+	
+	taper=0;
 
 	
 
@@ -449,9 +451,9 @@ module fan_mount(){
 	difference(){
 		union(){
 			//funnel to bottom
-			intersection(){
-				rotate([0,0,30]) cylinder(r1=11.5/cos(180/3), r2=center_rad, h=mount_height, $fn=3);
-				cylinder(r1=11.5/cos(180/64)+4, r2=center_rad, h=mount_height, $fn=64);
+			translate([0,0,-height]) intersection(){
+				rotate([0,0,30]) cylinder(r=11.5/cos(180/3), h=height-wall*3+.1, $fn=3);
+				cylinder(r1=11.5/cos(180/64)-taper, r2=11.5/cos(180/64)+4, h=height-wall*3+.1, $fn=64);
 			}
 
 			//straight
@@ -462,7 +464,7 @@ module fan_mount(){
 
 			//taper to fan
 			intersection(){
-				rotate([0,0,30]) cylinder(r1=11.5/cos(180/3), r2=center_rad, h=mount_height, $fn=3);
+				rotate([0,0,30]) cylinder(r1=13/cos(180/3), r2=center_rad, h=mount_height, $fn=3);
 				cylinder(r1=11.5/cos(180/64)+4, r2=center_rad, h=mount_height, $fn=64);
 			}
 
@@ -479,6 +481,14 @@ module fan_mount(){
 		difference(){
 			union() translate([0,0,-.1]) {
 				cylinder(r2=hole, r1=extruder_rad-hotend_rad-wall-thick, h=mount_height+1);
+
+				translate([0,0,-height+thick]) intersection(){
+					rotate([0,0,30]) cylinder(r=11.5/cos(180/3)-thick, h=height-wall*3+.1, $fn=3);
+					cylinder(r1=11.5/cos(180/64)-taper-thick, r2=11.5/cos(180/64)+4-thick, h=height-wall*3+.1, $fn=64);
+				}
+
+				translate([0,0,-height+thick])
+					rotate([0,0,-30]) cylinder(r1=11.5/cos(180/64)+4, r2=11.5/cos(180/64)+4, h=height-wall*3+.2, $fn=3);
 	
 				//straight
 				translate([0,0,-wall*3+.05]) intersection(){
@@ -494,12 +504,12 @@ module fan_mount(){
 			}
 
 			for(i=[0:120:359])
-				rotate([0,0,i+30]) translate([0,-thick/2,-mount_height*3]) cube([30,thick,mount_height*6]);
+				rotate([0,0,i+30]) translate([0,-thick/4,-mount_height*3]) cube([30,thick/2,mount_height*6]);
 		}
 
 		//coutout around the hotends
 		for(i=[0:120:359])
-			rotate([0,0,i+90]) translate([extruder_rad,0,0]) sphere(r=hotend_rad+wall-.5);
+			rotate([0,0,i+90]) translate([extruder_rad,0,0]) sphere(r=hotend_rad+wall-.5, $fn=36);
 
 		//cutout the fan mounting holes
 		for(i=[0:90:359])
