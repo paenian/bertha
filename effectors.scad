@@ -30,10 +30,10 @@ rail_offset = 10;
 //adjustable_wheel();
 //hotend_effector();
 //translate([0,33,0])
-//hotend_clamp();
+hotend_clamp();
 //translate([0,-33,0])
 //rod_end();
-fan_mount();
+//fan_mount();
 
 
 module hotend_effector(){
@@ -210,7 +210,7 @@ module hotend_clamp(){
 			//hotend block
 			translate([0,0,bracket_thick/2]) cube([bracket_width, bracket_height, bracket_thick], center=true);
 			//pushfit connector
-			difference () {
+			*difference () {
 				translate([0,bracket_height/2,0]) {
 					translate([0,wall/2,(bracket_thick+pushfit_rad+wall/2)/2+.5]) cube([bracket_width, wall, bracket_thick+pushfit_rad+1+wall/2], center=true);
 					translate([0,wall/2,bracket_thick+1]) rotate([90,0,0]) cylinder(r=pushfit_rad+wall, h=wall, center=true);
@@ -225,14 +225,14 @@ module hotend_clamp(){
 
 		//hotend hole
 		difference(){
-			translate([0,0,bracket_thick+1]) rotate([90,0,0]) cylinder(r=hotend_rad, h=bracket_height, center=true, $fn=72);
+			translate([0,-.1,bracket_thick+1]) rotate([90,0,0]) cylinder(r=hotend_rad, h=bracket_height+.2, center=true, $fn=72);
 			//groove slot
 			translate([0,bracket_height/2-groove_top-groove_height/2,bracket_thick+1]) rotate([90,0,0]) difference() {
 				cylinder(r=hotend_rad, h=groove_height, center=true, $fn=72);
-				cylinder(r=groove_rad, h=groove_height+.2, center=true, $fn=72);
+				cylinder(r=groove_rad, h=groove_height+.15, center=true, $fn=72);
 			}
 		}
-		translate([0,bracket_height/2,bracket_thick+1]) rotate([90,0,0]) cylinder(r=hotend_rad+1, h=.5);
+		translate([0,bracket_height/2+.01,bracket_thick+1]) rotate([90,0,0]) cylinder(r=hotend_rad+1, h=.5);
 		
 
 		//bolt slots
