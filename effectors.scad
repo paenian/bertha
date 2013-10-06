@@ -12,10 +12,10 @@ rod_end_thickness = 8;
 
 $fn=90;
 height = 40;		//40
-radius = 40;		//40
+radius = 34;		//40
 extruder_rad = 25;
 center_rad = 15;
-igus_rad = 6/2;
+igus_rad = 6.5/2;
 shroud_height = 40;	//height of fan shroud.  Adjust based on extruder.
 rail_offset = 10;
 
@@ -28,9 +28,9 @@ rail_offset = 10;
 //translate([80,0,0])
 //rail_effector();
 //adjustable_wheel();
-//hotend_effector();
+hotend_effector();
 //translate([0,33,0])
-hotend_clamp();
+//hotend_clamp();
 //translate([0,-33,0])
 //rod_end();
 //fan_mount();
@@ -92,11 +92,11 @@ module arm_supports(){
 	ring_rad = radius*sqrt(3)-arm_sep/2+cone_height;
 	intersection(){
 		rotate([0,0,30]) cylinder(r1=extruder_rad/cos(60), r2=(radius+wall+bolt_rad)/cos(60), h=height,$fn=3);
-		rotate([0,0,30]) cylinder(r1=(radius+bolt_rad)/cos(60), r2=(radius+bolt_rad)/cos(60), h=height+10,$fn=3);
+		rotate([0,0,30]) cylinder(r1=(radius+nut_rad)/cos(60), r2=(radius+nut_rad)/cos(60), h=height+10,$fn=3);
 		union() for(i=[0:120:359]) rotate([0,0,i])
 			translate([0,-radius*2,height/2]) difference(){
 				union(){
-					cylinder(r2=ring_rad+wall+nut_height,r1=ring_rad+wall+nut_height,h=height+wall*2, center=true);
+					rotate([0,0,30]) cylinder(r2=(ring_rad+wall+nut_height)/cos(30),r1=(ring_rad+wall+nut_height)/cos(30),h=height+wall*2, center=true, $fn=6);
 					translate([0,ring_rad+wall*1.5,-height/4]) cylinder(r=wall*1.5, h=height/2, center=true, $fn=6);
 				}
 				cylinder(r2=ring_rad,r1=ring_rad+2,h=height+wall*2+1, center=true);
@@ -127,14 +127,15 @@ mount_height = 15;
 mount_width = 60;
 
 module extruder_mount(solid = 1){
+	fillet = 8;
 	if(solid){
-		translate([-mount_width/2,-wall*2,0]) cube([mount_width,wall*2,mount_height]);
+		translate([-radius/2/cos(30)-wall,-wall*2,0]) cube([radius/cos(30)+wall*2,wall*2,mount_height]);
 		cylinder(r=(hotend_rad+wall)/cos(30), h=mount_height, $fn=6);
 		
-		for(i=[0,1]) mirror([i,0,0]) translate([radius/2,0,mount_height-.05]) rotate([90,0,0]) cube([wall*2, wall, wall*2]);
+		for(i=[0,1]) mirror([i,0,0]) translate([arm_sep/2-cone_height-nut_height-wall-fillet,0,mount_height-.05]) rotate([90,0,0]) cube([fillet, fillet, wall*2]);
 	}else{
 		union(){
-			for(i=[0,1]) mirror([i,0,0]) translate([radius/2-1.3,.05,mount_height+wall-.1]) rotate([90,0,0]) cylinder(r=wall,h=wall*2+3);
+			for(i=[0,1]) mirror([i,0,0]) translate([arm_sep/2-cone_height-nut_height-wall-fillet,.05,mount_height+fillet-.01]) rotate([90,0,0]) cylinder(r=fillet,h=wall*2+3);
 
 			//shore up the front
 			translate([-mount_width/4,.01,-.1]) cube([mount_width/2,wall*3,mount_height+1]);
