@@ -11,16 +11,16 @@ sb_width = 24;
 
 render() translate([-37,38,0]) bracket(motor=true);
 render() translate([25,24,0]) bracket(motor=false, push=true);
-render() translate([75,30,0]) rotate([0,0,90]) hotend_clamp();
+//render() translate([75,30,0]) rotate([0,0,90]) hotend_clamp();
 
 render() translate([-36,-50,0]) rail_effector();
-render() translate([25,-105,0]) idler(push=true);
+render() translate([20,-98,0]) idler(push=true);
 
-render() translate([70,65,0]) idler_guide();
+render() translate([20,-71,0]) idler_guide();
 
 render(){
-	for(i=[0,46])
-		translate([56,i-38,0]) rotate([0,0,90]) triplebearingarm();
-	for(i=[0,45])
-		translate([76,i-45,0]) rod_end();
+	for(i=[50])
+		translate([52,i-50,0]) rod_end();
+	for(i=[0, 50, 100])
+		translate([72,i-25,0]) rod_end();
 }

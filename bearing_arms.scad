@@ -37,8 +37,8 @@ in = 2;
 //ujointarm(sep = .4, sphere=12, inset = in, slop = .5);
 
 //rotate([0,-45,0]) 
-triplebearing();
-triplebearingarm(sep = 2, sphere=9.5, inset = in, slop = .5);
+//triplebearing();
+//triplebearingarm(sep = 2, sphere=9.5, inset = in, slop = .5);
 
 module triplebearing(){
 	bearing_rad = 5.2;
@@ -166,7 +166,7 @@ module triplebearingarm(sep = 0, sphere = 10, slop=.25){
 	}
 
 	//flatten the top and bottom
-	for(i=[0,1]) mirror([0,0,i])
+	for(i=[0,1]) mirror([0,0,i]){
 		translate([0,0,-height+1]) cube([200,200,height], center=true);
 
 		//flatten the top and bottom
