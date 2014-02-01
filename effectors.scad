@@ -60,10 +60,10 @@ rod_inset = 15;
 //translate([0,33,0])
 //hotend_clamp(pushfit = false);
 //translate([arm_sep/2+6,-10,16.5]) mirror([0,1,0])
-//rod_end();
+rod_end();
 //fan_mount();
 //hotend_effector();
-mirror([0,0,1]) translate([0,0,-12.5]) hotend_tripleclamp(tap_height=0, h=12.5);
+//mirror([0,0,1]) translate([0,0,-12.5]) hotend_tripleclamp(tap_height=0, h=12.5);
 
 module hotend_tripleclamp(tap_height = 0, h = 10){
 	difference(){
@@ -437,7 +437,9 @@ module rod_end_sweep(rad=9.5){
 
 module rod_end(){
 	length = bolt_length+rod_inset+wall*1.5;
-	translate([0,0,rod_size*cos(30)-1]) rotate([90+taper-taper,0,0])
+	translate([0,0,(rod_size+.5)*cos(30)])
+	rotate([90+taper-taper,0,0])
+	
 	difference(){
 		cylinder(r=rod_size+.5, h=length, $fn=6);
 

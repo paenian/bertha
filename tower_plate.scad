@@ -2,7 +2,7 @@ include <configuration.scad>;
 use <brackets.scad>;
 use <effectors.scad>;
 use <idler_guide.scad>;
-use <bearing_arms.scad>;
+//use <bearing_arms.scad>;
 
 
 sb_width = 24;
