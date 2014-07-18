@@ -29,8 +29,8 @@ rail_offset = 10;
 
 hotend_rad = 8.05;
 
-%translate([0,20,0]) cube([30,10,30], center=true);
-%translate([0,-18,-height/2]) cube([30,10,30], center=true);
+//%translate([0,20,0]) cube([30,10,30], center=true);
+//%translate([0,-18,-height/2]) cube([30,10,30], center=true);
 
 //%translate([0,0,0]) cylinder(r=extruder_rad, h=1);
 //%rotate([0,0,30]) cylinder(r=center_rad/cos(60), h=1, $fn=3);
@@ -60,9 +60,9 @@ rod_inset = 15;
 //translate([0,33,0])
 //hotend_clamp(pushfit = false);
 //translate([arm_sep/2+6,-10,16.5]) mirror([0,1,0])
-rod_end();
+//rod_end();
 //fan_mount();
-//hotend_effector();
+hotend_effector();
 //mirror([0,0,1]) translate([0,0,-12.5]) hotend_tripleclamp(tap_height=0, h=12.5);
 
 module hotend_tripleclamp(tap_height = 0, h = 10){
@@ -172,7 +172,7 @@ module hotend_effector(){
 			translate([0,-hotend_attachment_rad,10]) cylinder(r=nut_rad, h=10, $fn=6);
 
 			//fan slot
-			#translate([0,radius-6+bolt_rad,height-34/2]) cube([31,12,31], center=true);
+			translate([0,radius-6+bolt_rad,height-34/2]) cube([31,12,31], center=true);
 		}
 
 		//endstop recess
