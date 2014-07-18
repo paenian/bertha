@@ -64,7 +64,7 @@ module bracket(motor = true, push = false){
     }
 
     //access hole down the center
-    translate([0,-radius/2,height/2]) rotate([90,0,0]) rotate([0,0,180/8]) cylinder(r=13.5, h=80,center=true, $fn=8);
+    translate([0,-radius/2,height/2]) rotate([90,0,0]) rotate([0,0,180/8]) cylinder(r=12, h=80,center=true, $fn=8);
 
     //access holes on the sides
     translate([0,20,height/2]) rotate([90,0,0]) rotate([0,60,0]) rotate([0,0,180/8]) translate([0,0,10]) cylinder(r=10.63, h=40,center=true, $fn=8);
@@ -148,7 +148,7 @@ module idler(push=false){
   }
 }
 
-sb_offset=6;
+sb_offset=3;
 sb_height=10;
 sb_width = 20;
 sb_screws=9.5;
@@ -175,8 +175,8 @@ module motor_mount(){
   }
 
   //mounting holes for the microswitch
-  render() for(i=[0:1]) mirror([i,0,0]) translate([sb_screws/2,wall,sb_height/2]) rotate([-90,0,0]) {
-    cylinder(r=sb_rad, h=sb_offset*2);
+  render() for(i=[0:1]) mirror([i,0,0]) translate([sb_screws/2,sb_offset,sb_height/2]) rotate([-90,0,0]) {
+    cylinder(r=sb_rad, h=wall*3, center=true);
     translate([0,0,sb_offset*2]) cylinder(r=bolt_rad, h=ext_y);
   }
   //and the motor mount
