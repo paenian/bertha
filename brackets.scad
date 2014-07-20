@@ -15,11 +15,12 @@ $fn=32;
 
 
 //motor for printing
-bracket(motor=true);
+//bracket(motor=true);
 
 //idler for mounting on the bottom
 //bracket(motor=false, push=true);
-//translate ([0,-60,0]) idler(push=true);
+//translate ([0,-60,0])
+idler(push=true);
 //translate([0,0,sb_width/2]) rotate([0,90,0]) switch_bracket_screwed();
 
 

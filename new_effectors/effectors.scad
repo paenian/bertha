@@ -14,7 +14,7 @@ rod_inset_r = 27;
 pulley_rad = 12/2;
 idler_rad = 17.50/2;
 
-wheel_sep = 30.75;	//this is calculated from rail width+wheel size
+wheel_sep = 31.5;	//this is calculated from rail width+wheel size
 wheel_z_sep = 60;
 
 
@@ -34,13 +34,14 @@ echo(arm_sep);
 translate([0,0,rod_inset_r]) rotate([90,0,0]) translate([0,0,-wall])
 bearing_bar();
 
+rotate([0,0,180])
 rail_effector();
 
 translate([arm_sep/2,0,rod_inset_r+.1]) rotate([0,0,-38]) rotate([30,0,0]) rotate([0,90,0])
 rod_end();
 
-translate([0,120,0]) rotate([0,0,60])
-!hotend_effector();
+translate([0,60,0])
+hotend_effector();
 
 
 
@@ -209,8 +210,8 @@ module arm_bearings(solid=1, height=5, inset=10, offset=0, base_height=0){
 					translate([arm_mount_sep/2+h+slop/2+1.5,(-623_rad-2)*2,0]) rotate([0,-90,0]) cube([inset+623_rad+2,offset+623_rad*6,arm_mount_sep+slop/2+h*2+3]);	
 				}
 				hull() for(i=[0:1]) mirror([i,0,0]) {
-					translate([arm_mount_sep/2+slop/2-h*2+m_rad,623_rad*3+6-inset/cos(30),base_height+h*2-m_rad]) rotate([90,0,0]) cylinder(r=h*2, h=50, center=true);
-					translate([arm_mount_sep/2+h+slop/2-h*2+1+m_rad,623_rad*3+6-inset/cos(30),base_height+h*5]) rotate([90,0,0]) cylinder(r=h, h=50, center=true);
+					translate([arm_mount_sep/2-h*2+m_rad,623_rad*3+6-inset/cos(30),base_height+h*2-m_rad]) rotate([90,0,0]) cylinder(r=h*2, h=50, center=true);
+					translate([arm_mount_sep/2+h-h*2+1+m_rad,623_rad*3+6-inset/cos(30),base_height+h*5]) rotate([90,0,0]) cylinder(r=h, h=50, center=true);
 				}
 			}
 		}
@@ -252,7 +253,7 @@ module rail_effector(){
 
 			intersection(){
 				translate([0,0,height+3]) cube([20,(623_rad+2)*2,6], center=true);
-				translate([0,-623_rad-2,height+3]) cylinder(r=623_rad+4, h=6.1, center=true);
+				#translate([0,-623_rad-2,height]) sphere(r=623_rad+2);
 			}
 
 			//body

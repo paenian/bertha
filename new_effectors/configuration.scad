@@ -23,7 +23,7 @@ m4_rad = 4/2+slop;
 m4_cap_rad = 7/2+slop;
 m4_washer_rad = 2*m4_rad;
 
-m5_nut_rad = 9/2+slop;
+m5_nut_rad = 9.05/2+slop;
 m5_nut_height = 4.7;
 m5_rad = 5/2+slop;
 m5_cap_rad = 8/2+slop;
@@ -31,7 +31,7 @@ m5_washer_rad = 2.1*m5_rad;
 
 //for the tiny m3 bearings
 623_width = 4;
-623_rad = 10.1/2+slop;
+623_rad = 10.05/2+slop;
 623_bore = m3_rad;
 623_inner_shoulder = 623_bore+(623_rad-m3_rad)/3;
 623_outer_shoulder = 623_rad-(623_rad-m3_rad)/3;
