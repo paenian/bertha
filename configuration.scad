@@ -1,5 +1,7 @@
 $fn = 18;
 
+slop = .2;
+
 wall = 5;
 
 bolt_slop = .5;
@@ -19,5 +21,5 @@ m3nut_dia = 6.1+nut_slop;
 m3nut_rad = m3nut_dia/2;
 m3nut_height = 3;
 
-ext_x = 20;
-ext_y = 60;
+ext_x = 20+slop;
+ext_y = 60+slop;

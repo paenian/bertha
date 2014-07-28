@@ -2,46 +2,48 @@ include <configuration.scad>;
 
 //%translate([0,0,-.05]) cube([200,200,.1],center=true);
 
-radius = 48;
+radius = 38;
 fudge=4;
 
+idler_width = 17;
 
 height = ext_y;
 
 inner = ext_x+wall;
 rounding = 10;
 
-$fn=32;
+$fn=16;
+
+dist=2 + 7 + 8;
+//cube([wall*2,wall*2+dist*2,wall], center=true);
 
 
-//motor for printing
-//bracket(motor=true);
-
-//idler for mounting on the bottom
+//parts for printing
+bracket(motor=true);
 //bracket(motor=false, push=true);
-//translate ([0,-60,0])
-idler(push=true);
+//idler(push=true);
+
+
 //translate([0,0,sb_width/2]) rotate([0,90,0]) switch_bracket_screwed();
 
 
 //idler assembly put together
 //render() bracket(motor=false);
-//translate ([0,46,-40]) rotate ([90,0,0]) idler();
+//translate ([0,34.66+2,-40]) rotate ([90,0,0]) idler(push=true);
 //%translate ([0,17,5]) rotate ([-90,0,0]) switch();
 //%translate([0,10,0]) switch_bracket_screwed();
 
 
 module bracket(motor = true, push = false){
-  difference(){
-    minkowski(){
-      difference() {
-        translate([0,fudge,0]) cylinder(r=radius-rounding,h=height-rounding,$fn=6);
-      }
-		 intersection(){
-        sphere(r=rounding);
-        translate([0,0,rounding]) cube([rounding*2, rounding*2, rounding*2],center=true);
-		 }
-    }
+	difference(){
+		minkowski(){
+			translate([0,fudge,0]) cylinder(r=radius-rounding,h=height-rounding,$fn=6);
+
+			intersection(){
+        		sphere(r=rounding);
+        		translate([0,0,rounding]) cube([rounding*2, rounding*2, rounding*2],center=true);
+		 	}
+    	}
 
     //cut out outer wings
     for(i=[0:1])
@@ -58,9 +60,9 @@ module bracket(motor = true, push = false){
       }
 
     //cut out extrusion slots
-    translate([-ext_x/2, -ext_y,-.1]) ext_slot(ext_y+1,1, 10, [[0,0,0], [1,0,1]], [15,0,15]);
+    #rotate([0,0,180]) translate([-ext_x/2, 0,-.1]) ext_slot(ext_y+1,1, 10, [[15,0,15], [0,0,0]], [15,0,15]);
     for(i=[0:1]) mirror([i,0,0]) {
-      translate([ext_x/2+wall,0,-.1]) rotate([0,0,-30]) ext_slot(ext_y+1, 1, ext_y, [[10,0,10], [0, 25, 0]], [0, 1, 0]);
+      translate([ext_x/2+wall,0,-.1]) rotate([0,0,-30]) ext_slot(ext_y+1, 1, ext_y, [[10,0,10], [0, 0, 0]], [0, 1, 0]);
       translate([ext_x/2+wall,0,-.1]) rotate([0,0,-30]) translate([ext_x-.1, -ext_y/2,0]) cube([ext_x, ext_y, height+1]);
     }
 
@@ -99,15 +101,15 @@ module idler_mount(push = false){
     translate([0,0,height+wall/2]) cylinder(r=bolt_cap_rad, h=wall*2,center=true);
     translate([0,0,height-wall/2+.3+.5]) cylinder(r=bolt_rad, h=wall*2+1,center=true);
     if(push){
-      translate([0,0,height/2-wall*2-nut_height-.3]) cylinder(r=20, h=height,center=true, $fn=4);
+      translate([0,0,height/2-wall*2-nut_height-.3]) cylinder(r=idler_width, h=height,center=true, $fn=4);
 
       translate([0,0,height-wall*1.75-nut_height/2]) cylinder(r=bolt_rad, h=nut_height+wall/2,center=true);
     
 	  translate([0,0,height-wall*1.5-nut_height/2]) rotate([0,0,30]) cylinder(r=nut_rad, h=nut_height+.1, center=true, $fn=6);
-	  #translate([0,4,height-wall*1.5-nut_height/2]) rotate([0,0,30]) cylinder(r=nut_rad, h=nut_height+.1, center=true, $fn=6);
+	  translate([0,4,height-wall*1.5-nut_height/2]) rotate([0,0,30]) cylinder(r=nut_rad, h=nut_height+.1, center=true, $fn=6);
       //translate([0,0,height-wall*3+.3]) rotate([0,0,30]) cylinder(r=bolt_rad, h=5, center=true, $fn=6);
     }else{
-      translate([0,0,height/2-wall*2.5]) cylinder(r=20, h=height,center=true, $fn=4);
+      translate([0,0,height/2-wall*2.5]) cylinder(r=idler_width, h=height,center=true, $fn=4);
     }
   }
 }
@@ -124,8 +126,8 @@ module idler(push=false){
     union(){
       //body
       #intersection(){
-        translate([0,0,idler_height/2]) cylinder(r=20-.5, h=idler_height,center=true, $fn=4);
-		  translate([0,0,idler_height/2]) cube([40,wall*2,idler_height],center=true);
+        translate([0,0,idler_height/2]) cylinder(r=idler_width-.6, h=idler_height,center=true, $fn=4);
+		  translate([0,0,idler_height/2]) cube([idler_width*2,wall*2,idler_height],center=true);
       }
 
       //idler support
@@ -149,7 +151,7 @@ module idler(push=false){
   }
 }
 
-sb_offset=3;
+sb_offset=1;
 sb_height=10;
 sb_width = 20;
 sb_screws=9.5;
@@ -178,12 +180,16 @@ module motor_mount(){
   //mounting holes for the microswitch
   render() for(i=[0:1]) mirror([i,0,0]) translate([sb_screws/2,sb_offset,sb_height/2]) rotate([-90,0,0]) {
     cylinder(r=sb_rad, h=wall*3, center=true);
-    translate([0,0,sb_offset*2]) cylinder(r=bolt_rad, h=ext_y);
+    translate([0,0,sb_offset*2+wall]) cylinder(r=bolt_rad, h=ext_y*2);
   }
   //and the motor mount
   translate([0,radius*cos(30),height/2]) rotate([90,0,0]) cylinder(r=13, h=20,center=true, $fn=16);
   for(i=[0:3]){
-    translate([0,radius*cos(30),height/2]) rotate([90,0,0]) rotate([0,0,90*i]) translate([31/2,31/2,0]) cylinder(r=2, h=20, $fn=18, center=true, $fn=8);
+    translate([0,radius*cos(30),height/2]) rotate([90,0,0]) rotate([0,0,90*i]) translate([31/2,31/2,0]) cylinder(r=2, h=20, center=true, $fn=8);
+    hull(){
+	    translate([0,radius*cos(30),height/2]) rotate([90,0,0]) rotate([0,0,90*i]) translate([31/2,31/2,0]) cylinder(r=4, h=1, $fn=8);
+       translate([0,radius*cos(30)-45,height/2]) rotate([90,0,0]) rotate([0,0,90*i]) translate([31/2-6,31/2-6,0]) cylinder(r=2, h=1, $fn=8);
+	 }
   }
 }
 
