@@ -38,7 +38,7 @@ m5_washer_rad = 2.1*m5_rad;
 
 //spacers
 spacer_rad = 6/2+slop;
-spacer_len = 2;
+spacer_len = 2-slop/2;
 
 eccentric_rad = 7.2/2+slop;
 eccentric_washer_rad = 15/2+slop;
@@ -80,9 +80,9 @@ module 623_bearing(){
 	}
 }
 
-module 623_bearing_cone(rad = 623_rad, height = 5, solid=1){
+module 623_bearing_cone(rad = 623_rad, height = 5, solid=1, nut_trap=0){
 	cone_h = rad-623_inner_shoulder;
-	if(cone_h < height){
+	if(nut_trap==1){
 		if(solid==1){
 			union(){
 				echo("cone_height", cone_h);
@@ -93,9 +93,9 @@ module 623_bearing_cone(rad = 623_rad, height = 5, solid=1){
 			//bore
 			translate([0,0,-.1]) rotate([0,0,90]) cap_cylinder(r=623_bore, h=height+.5);
 			//nut trap
-			translate([0,0,height-m3_nut_height]) hull(){
-				cylinder(r=m3_nut_rad, h=m3_nut_height+.1, $fn=6);
-				translate([rad,0,0]) cylinder(r=m3_nut_rad, h=m3_nut_height+.1, $fn=6);
+			#translate([0,0,height-m3_nut_height]) hull(){
+				cylinder(r1=m3_nut_rad, r2=m3_nut_rad+.5, h=m3_nut_height+.5, $fn=6);
+				translate([30,0,0]) cylinder(r1=m3_nut_rad, r2=m3_nut_rad+.5, h=m3_nut_height+.5, $fn=6);
 			}
 		}
 	}else{

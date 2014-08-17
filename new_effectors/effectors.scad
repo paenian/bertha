@@ -32,6 +32,7 @@ mount_height=12.5;
 echo(arm_sep);
 
 
+
 //This is a rail effector assembled.
 translate([0,0,rod_inset_r]) rotate([90,0,0]) translate([0,0,-wall])
 bearing_bar();
@@ -45,6 +46,12 @@ rod_end();
 translate([0,60,0])
 !hotend_effector();
 
+//bearing bar + rod ends for printing
+union(){
+	bearing_bar();
+	
+	for(i=[-1,1]) translate([i*arm_sep/2,0,0]) rotate([0,0,-90*i]) rod_end();
+}
 
 
 
@@ -133,30 +140,37 @@ module hotend_effector(){
 }
 
 module rod_end_helper(solid=1){
-	for(i=[0,1]) mirror([i,0,0]) translate([rodend_jaw_sep/2,0,0]) rotate([0,90,0]) rotate([0,0,180]) 623_bearing_cone(rad = 623_rad-1, height=1, solid=solid);
+	for(i=[0,1]) mirror([i,0,0]) translate([rodend_jaw_sep/2+slop/2,0,0]) rotate([0,90,0]) rotate([0,0,180]) 623_bearing_cone(rad = 623_rad-1, height=1, solid=solid);
 }
 
 module rod_end(){
 	jaw_depth = 18;
 	rod_width = 8.5+slop;
 	rod_len = 24;
+	clamp_extra=2;
+	translate([0,0,rod_width/sqrt(2)+wall/4-.75]) 
 	difference(){
 		union(){
 			rod_end_helper(solid=1);
-			translate([0,jaw_depth+rod_len/2,rod_width*sqrt(2)/2+m3_rad]) rotate([0,90,0]) cylinder(r=m3_cap_rad/cos(30), h=wall*2, center=true, $fn=6);
+			
+			//clamp
+			translate([0,jaw_depth+rod_len/2,rod_width*sqrt(2)/2+m3_rad-clamp_extra]) rotate([0,90,0]) cylinder(r=m3_cap_rad/cos(30)+clamp_extra, h=wall*2, center=true, $fn=6);
 
 			//jaws
 			difference(){
 				hull(){
 					//bolt holder
-					for(i=[0,1]) mirror([i,0,0]) translate([rodend_jaw_sep/2+.95,0,0]) rotate([0,90,0]) cylinder(r=rod_width/sqrt(2), h=wall);
+					for(i=[0,1]) mirror([i,0,0]) translate([rodend_jaw_sep/2+.95,0,0]) intersection() {
+						rotate([0,90,0]) cylinder(r=rod_width/sqrt(2)+1, h=wall);
+						scale([1,1,1.4]) sphere(r=rod_width/sqrt(2));
+					}
 					
 					//rod
 					translate([0,jaw_depth,0]) rotate([-90,0,0]) cylinder(r=rod_width/sqrt(2)+wall/2, h=rod_len, $fn=8);
 				}
 		
 				//cut off top and bottom
-				for(i=[0:1]) mirror([0,0,i]) translate([0,0,-4.25-rod_width/sqrt(2)-wall/4]) cube([100,100,10], center=true);
+				for(i=[0:1]) mirror([0,0,i]) translate([0,0,.75-5-rod_width/sqrt(2)-wall/4]) cube([100,100,10], center=true);
 
 				//bolt cutouts
 				rotate([0,90,0]) rotate([0,0,-90]) cap_cylinder(r=m3_rad, h=50, center=true);
@@ -294,13 +308,13 @@ module bearing_bar_helper(solid=1){
 	for(i=[0:1]) mirror([i,0,0]){
 		//bearing cones for end bearings
 		if(solid==1){
-			translate([arm_mount_sep/2,0,0]) rotate([0,-90,0]) 623_bearing_cone(rad = wall+wall/2, height = wall+2, solid=solid);
+			translate([arm_mount_sep/2,0,1]) rotate([0,-90,0]) 623_bearing_cone(rad = wall+wall/2, height = wall+.25, solid=solid);
 		}else{
-			translate([arm_mount_sep/2,0,0]) rotate([0,-90,0]) 623_bearing_cone(rad = wall+wall/2, height = wall, solid=solid);
+			translate([arm_mount_sep/2,0,1]) rotate([0,-90,0]) 623_bearing_cone(rad = wall+wall/2, height = wall+.25, solid=solid, nut_trap=1);
 		}
 			
 		//bearing mounts for middle bearings
-		for(j=[0,1]) mirror([0,j,0]) translate([arm_sep/2,0,0]) rotate([-90,0,0]) 623_bearing_mount(rad=623_rad+2, height=623_width+spacer_len/2, solid=solid);
+		for(j=[0,1]) mirror([0,j,0]) translate([arm_sep/2,0,1]) rotate([-90,0,0]) 623_bearing_mount(rad=623_rad+2, height=623_width+spacer_len/2, solid=solid);
 	}
 }
 
@@ -310,8 +324,7 @@ module bearing_bar(){
 		union(){
 			bearing_bar_helper(solid=1);
 			//connect 'em up
-			rotate([0,90,0]) cylinder(r=wall+wall/2, h=arm_mount_sep-623_rad*2, center=true);
-			//NOTE: the rounded top intersects with the endstop, so it's pretty importand that it stays rouned.
+			rotate([0,90,0]) cylinder(r=wall+wall/2+1, h=arm_mount_sep-623_rad*2, center=true);
 		}
 
 		//cut off the front, back and bottom
