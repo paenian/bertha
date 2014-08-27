@@ -10,31 +10,36 @@ The design of the plastic parts contained her is complete - that's not to say th
 I am working on build instructions in a blog over here: http://berthareprap.blogspot.com/2013/05/mark-4-finally.html
 I am currently constructing the very first machine, so instructions are coming out as I get build time.
 
-BOM will be posted for each step, and when I've completed the bot I'll post a full BOM here.
+Preliminary BOM
+===============
+FRAME
+-----
+m3 x 8mm...........12     Motor mounting
+m3 x 10mm..........12     Bearing bar side mounts
+m3 x 16mm..........12     Rod End clamps - use to hold rods in place temporarily, while glue sets up.
+m3 x 22mm..........12     Rod End attachments - clamp the rod ends onto the bearing bar
+m3 x nuts..........24     12 for the rod end clamp, 12 for bearing bar attachment
+m3 x locknut.......12     rod end attachments
 
+m5 x 30mm..........15     12 for V wheel mounts, 3 for idler mounts
+m5 x 10mm low p....72     12 for each bracket
+m5 x nut...........12     6 idler, 6 belt mount
+m5 x washer........6      v-wheel clamping
+m5 x T-nut.........72     12 for each bracket
 
-Frame: 2060 aluminum extrusion.
-Linear motion: openrail, with Delrin V wheels.  Low cost option: Run the carriages in the extrusion grooves.
-Drive: Synchromesh cable.  Low cost option: Fishing line.
-Rods: Igus rod ends, square carbon fiber tube.
-Extruders: Three of them.  Bowden style.
+623 bearings.......36     6 for each bearing bar.
+m3 x 2mm spacer....12     http://www.mcmaster.com/#94669a210/=tgrbjv  4.5mm outside diameter.  6mm OD might be better, but they're significantly more expensive.
+8mm square carbon fiber rods....6   Length forthcoming.  Gotta measure 'em.
 
+OpenBuilds Part Store bits
+1m v-rails.........3      http://openbuildspartstore.com/black-v-slot-20-x-60mm/
+mini-V  wheel kit..12     http://openbuildspartstore.com/mini-v-wheel-kit/
+idler kit..........3      http://openbuildspartstore.com/smooth-idler-pulley-kit/
+Eccentric Spacers..6      http://openbuildspartstore.com/eccentric-spacers/
 
+Misumi
+350mm 2060 extrusion, HFS5-2060-350.  This can be larger if you like.
 
-Some Firmware Variables to get the Alpha group started.  I'll upload a sample config once I get there.
-BELT_PITCH 3.81
-PULLEY_TEETH 15
-
-STEPS_PER_ROTATION 200
-MICRO_STEPS 8
-
-
-DELTA_DIAGONAL_ROD 400  //note: set this to exactly your rod length.  Ex.  Act.  Ly.
-
-//these are all calculated, and may be a smidge off.  As long as your parts are identical, that's cool.  If these are off, your printer will be high or low in the center, its print surface will be convex or concave.
-END_EFFECTOR_HORIZONTAL_OFFSET 40
-CARRIAGE_HORIZONTAL_OFFSET 15
-PRINTER_RADIUS 208.2328   //change this one if your printer is convex/concave.
 
 
 
