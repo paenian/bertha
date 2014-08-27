@@ -10,9 +10,9 @@ The design of the plastic parts contained her is complete - that's not to say th
 I am working on build instructions in a blog over here: http://berthareprap.blogspot.com/2013/05/mark-4-finally.html
 I am currently constructing the very first machine, so instructions are coming out as I get build time.
 
-Preliminary BOM
+Bill of Materials
 ===============
-FRAME
+Frame BOM
 -----
 m3 x 8mm...........12     Motor mounting
 m3 x 10mm..........12     Bearing bar side mounts
@@ -39,6 +39,15 @@ Eccentric Spacers..6      http://openbuildspartstore.com/eccentric-spacers/
 
 Misumi
 350mm 2060 extrusion, HFS5-2060-350.  This can be larger if you like.
+
+Printed Bits
+Idler Bracket......6
+Idler Slider.......6
+Motor Bracket......6
+Hotend Effector....1      These are in the new effectors directory!
+Rail Effector......3      These are in the new effectors directory!
+Bearing Bar........6      These are in the new effectors directory!
+Rod End...........12      These are in the new effectors directory!
 
 
 
