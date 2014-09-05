@@ -2,8 +2,8 @@ include <configuration.scad>;
 include <declib.scad>;
 
 //rumba_mount(left = true);
-//rumba_mount(left = false);
-fan_motor_mount();
+rumba_mount(left = false);
+//fan_motor_mount();
 
 rumba_x = 76;
 rumba_y = 135;
@@ -49,14 +49,14 @@ module rumba_mount(left = true){
 		
 		//rumba screw holes
 		translate([wall, wall+wall+far_bolt, wall*2+mount_w/2]) rotate([0,90,0]) cylinder(r=rad, h=rad*10, center=true);
-		translate([-.1, wall+wall+far_bolt, wall*2+mount_w/2]) rotate([0,90,0]) cylinder(r=nutrad, h=wall/2, $fn=6);
+		translate([-.1, wall+wall+far_bolt, wall*2+mount_w/2]) rotate([0,90,0]) cylinder(r1=nutrad+.25, r2=nutrad, h=wall/2, $fn=6);
 		
 			if(left){
 				translate([wall, wall+wall+close_bolt, wall*2+mount_w/2]) rotate([0,90,0]) cylinder(r=rad, h=rad*10, center=true);
-				translate([-.1, wall+wall+close_bolt, wall*2+mount_w/2]) rotate([0,90,0]) cylinder(r=nutrad, h=wall/2, $fn=6);
+				translate([-.1, wall+wall+close_bolt, wall*2+mount_w/2]) rotate([0,90,0]) cylinder(r1=nutrad+.25, r2=nutrad, h=wall/2, $fn=6);
 			}else{
 				translate([wall, wall+wall+mid_bolt, wall*2+mount_w/2]) rotate([0,90,0]) cylinder(r=rad, h=rad*10, center=true);
-				translate([-.1, wall+wall+mid_bolt, wall*2+mount_w/2]) rotate([0,90,0]) cylinder(r=nutrad, h=wall/2, $fn=6);
+				translate([-.1, wall+wall+mid_bolt, wall*2+mount_w/2]) rotate([0,90,0]) cylinder(r1=nutrad+.25, r2=nutrad, h=wall/2, $fn=6);
 			}
 	}
 }

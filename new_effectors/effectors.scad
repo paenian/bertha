@@ -21,12 +21,12 @@ belt_width=6;
 
 
 //hotend effector vars
-arm_rad = 30;
+arm_rad = 27;
 
-extruder_rad = 15;
-hotend_attachment_rad = 23;
-hotend_rad = 8.1;
-mount_height=12.5;
+extruder_rad = 13.5;
+//hotend_attachment_rad = 23;
+hotend_rad = 8.15;
+//mount_height=12.5;
 
 
 echo(arm_sep);
@@ -43,11 +43,14 @@ rail_effector();
 translate([arm_sep/2,0,rod_inset_r+.1]) rotate([0,0,-38]) rotate([30,0,0]) rotate([0,90,0])
 rod_end();
 
-translate([0,60,0])
-!hotend_effector();
+translate([0,0,0]){
+	hotend_effector();
+	
+	translate([0, -arm_rad+1, 17]) bearing_bar();
+}
 
 //bearing bar + rod ends for printing
-union(){
+!union(){
 	bearing_bar();
 	
 	for(i=[-1,1]) translate([i*arm_sep/2,0,0]) rotate([0,0,-90*i]) rod_end();
@@ -60,7 +63,7 @@ union(){
 
 echo("rod end jaws", rodend_jaw_sep);
 
-module extruder_mount(solid = 1, m_height = mount_height, fillet = 8, tap_height=0){
+module extruder_mount(solid = 1, m_height = 15, fillet = 8, tap_height=0){
 	gap = 2.25;
 
 	if(solid){		
@@ -76,9 +79,9 @@ module extruder_mount(solid = 1, m_height = mount_height, fillet = 8, tap_height
 			//bolt slots
 			if(m_height > m3_nut_rad*2){
 				translate([hotend_rad+m3_rad+1,0,m_height/2]) rotate([90,0,0]) cap_cylinder(r=m3_rad, h=wall*3+gap, center=true);
-				translate([hotend_rad+m3_rad+1,-wall-m3_nut_height,m_height/2]) hull(){
-					rotate([-90,0,0]) rotate([0,0,30]) cylinder(r=m3_nut_rad, h=m3_nut_height+.25, $fn=6);
-					translate([0,0,-m_height/2]) rotate([-90,0,0]) rotate([0,0,30]) cylinder(r=m3_nut_rad, h=m3_nut_height+.25, $fn=6);
+				translate([hotend_rad+m3_rad+1,-wall-m3_nut_height-1,m_height/2]) hull(){
+					rotate([-90,0,0]) rotate([0,0,30]) cylinder(r1=m3_nut_rad+.1, r2=m3_nut_rad, h=m3_nut_height+.75, $fn=6);
+					translate([0,0,-m_height/2]) rotate([-90,0,0]) rotate([0,0,30]) cylinder(r1=m3_nut_rad+.25, r2=m3_nut_rad, h=m3_nut_height+.75, $fn=6);
 				}
 
 				//mount tightener
@@ -102,7 +105,7 @@ module hotend_tripleclamp(tap_height = 0, height = 10, solid=1){
 module arm_mounts(solid=1, height=5, inset=25){
 	for(i=[0:120:359]) rotate([0,0,i]) translate([0,-arm_rad, 0]) arm_bearings(solid=solid, height=height, inset=inset, offset=0, base_height=0);
 
-	translate([0, -arm_rad, -623_rad]) bearing_bar();
+	//translate([0, -arm_rad, -623_rad]) bearing_bar();
 }
 
 module hotend_effector_body(solid=1, height=15){
@@ -110,7 +113,7 @@ module hotend_effector_body(solid=1, height=15){
 		cylinder(r=45, h=height);
 	}else{
 		for(i=[0:120:359]) rotate([0,0,i]) translate([0,- arm_rad, -.5]) hull(){
-			translate([0,0,0]) scale([1,.4,1]) cylinder(r=arm_mount_sep/2,h=height+1);
+			translate([0,0,0]) scale([1,.45,1]) cylinder(r=arm_mount_sep/2,h=height+1);
 			translate([0,-arm_mount_sep,0]) cylinder(r=arm_mount_sep/2,h=height+1);
 		}
 	}
@@ -118,7 +121,7 @@ module hotend_effector_body(solid=1, height=15){
 
 module hotend_effector(){
 	h = 15;
-	inset = 15;
+	inset = 23;
 	difference(){
 		union(){
 			difference(){
@@ -130,11 +133,11 @@ module hotend_effector(){
 				hotend_effector_body(solid=0, height=h);
 			}
 
-			//rotate([0,0,60])
+			rotate([0,0,60])
 			hotend_tripleclamp(height=h, solid=1);
 		}
 		
-		//rotate([0,0,60])
+		rotate([0,0,60])
 		hotend_tripleclamp(height=h, solid=0);
 	}
 }
@@ -185,6 +188,7 @@ module rod_end(){
 		rod_end_helper(solid=0);
 
 		//rod cutout
+		echo("Rod Length+=",jaw_depth+wall/2);
 		translate([0,jaw_depth+wall/2,0]) rotate([-90,0,0]) cylinder(r=rod_width/sqrt(2), h=rod_len+.2, $fn=4);
 		translate([0,jaw_depth+wall/2,0]) rotate([-90,0,0]) cylinder(r=rod_width/sqrt(2)/2, h=rod_len+.2, center=true);
 
