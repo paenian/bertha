@@ -1,8 +1,8 @@
 include <configuration.scad>;
 include <declib.scad>;
 
-//rumba_mount(left = true);
-rumba_mount(left = false);
+rumba_mount(left = true);
+//rumba_mount(left = false);
 //fan_motor_mount();
 
 rumba_x = 76;
@@ -21,7 +21,7 @@ module rumba_mount(left = true){
 	mid_bolt = 36;
 
 	//set this to the mounting screw size
-	mount_screw = 3.2/2;
+	mount_screw = 5.4/2;
 
 	mirror([(left)?0:1,0,0])
 	difference(){

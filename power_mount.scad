@@ -17,8 +17,13 @@ module switch_mount(){
 	mount_y = power_y+wall*2;
 	mount_z = power_z+wall*2;
 	
-	mount_bolt_rad = 3.3/2;
-	mount_bolt_cap_rad = 3.3;
+	//for 3mm
+	//mount_bolt_rad = 3.3/2;
+	//mount_bolt_cap_rad = 3.3;
+	
+	//for 5mm
+	mount_bolt_rad = 5.4/2;
+	mount_bolt_cap_rad = 5.4;
 
 	min_rad = 2;
 	min_res = 18;
@@ -65,6 +70,11 @@ module switch_mount(){
 			sphere(r=min_rad);
 		}
 
+		//zip tie slot in cable pass-through
+		translate([mount_x+ext_x/2, mount_y/2,wall+min_rad]){
+			for(i=[0,1]) mirror([0,i,0]) translate([0,mount_y/4,0]) cylinder(r=min_rad, h=wall*3, center=true);
+		}
+
 
 		//power mount holes
 		for(y=[(mount_y+power_hole_sep)/2, (mount_y+power_hole_sep)/2-power_hole_sep]) translate([-.1, y, mount_z/2]) rotate([0,90,0]) cylinder(r=bolt_rad, h=wall*2);
@@ -89,21 +99,28 @@ module power_mount_side(){
 	boltthick = 5;
 
 	//make the screws 3mm
-	bolt_rad = 3.2/2;
+//	bolt_rad = 3.2/2;
+
+	//go for 5mm
+	bolt_rad = 5.4/2;
 
 	difference(){
-		cube([ext_y+wall*2, ext_x+wall+2, wall*3]);
+		#cube([ext_y+wall-.5, ext_x+wall+2, wall*3]);
 
 		//extrusion slot
 		translate([wall, -.1, -.1]) cube([ext_y, ext_x+.2, wall*3+.2]);
 	
 		//supply screws
-		for(i=[wall+11.5, wall+11.5+25]) translate([ i, ext_x-1, wall*3/2]) rotate ([-90,0,0]) {
+		for(i=[wall+10, wall+10+25]) translate([ i, ext_x-1, wall*3/2]) rotate ([-90,0,0]) {
 			cylinder(h = wall+4, r=boltsize);
 			cylinder(h = boltthick, r1=bolthead, r2=bolthead);
 		}
 
-		//extrusion screws
+		//extrusion screw bottom
 		translate([-10,ext_x/2,wall*3/2]) rotate([0,90,0]) cylinder(r=bolt_rad, h=100);
+
+		//extrusion screw upper rail
+		translate([wall+ext_y-ext_x/2,ext_x-.1,wall*3/2]) rotate([-90,0,0]) cylinder(r=bolt_rad, h=100);
+		translate([wall+ext_y-ext_x/2,ext_x-.1+wall,wall*3/2]) rotate([-90,0,0]) cylinder(r=bolt_rad*2, h=100);
 	}
 }

@@ -28,6 +28,7 @@ m5_nut_height = 4.7;
 m5_rad = 5/2+slop;
 m5_cap_rad = 8/2+slop;
 m5_washer_rad = 2.1*m5_rad;
+m5_cap_height = 2;
 
 //for the tiny m3 bearings
 623_width = 4;
