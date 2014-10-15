@@ -44,13 +44,13 @@ translate([arm_sep/2,0,rod_inset_r+.1]) rotate([0,0,-38]) rotate([30,0,0]) rotat
 rod_end();
 
 translate([0,0,0]){
-	hotend_effector();
+!	hotend_effector();
 	
 	translate([0, -arm_rad+1, 17]) bearing_bar();
 }
 
 //bearing bar + rod ends for printing
-!union(){
+union(){
 	bearing_bar();
 	
 	for(i=[-1,1]) translate([i*arm_sep/2,0,0]) rotate([0,0,-90*i]) rod_end();
