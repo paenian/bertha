@@ -5,7 +5,7 @@ Large format Rostock style printer, built with aluminum extrusions.
 
 My plan is to design a large printer, emphasizing quality over cost.  Ideally there will be the 'full' version, and then various lower cost options.
 
-The design of the plastic parts contained her is complete - that's not to say they won't be updated, just that everything in here is functional.
+The design of the plastic parts contained here is complete - that's not to say they won't be updated, just that everything in here is functional.
 
 I am working on build instructions in a blog over here: http://berthareprap.blogspot.com/2013/05/mark-4-finally.html
 I am currently constructing the very first machine, so instructions are coming out as I get build time.
@@ -40,7 +40,7 @@ Eccentric Spacers..6&nbsp;&nbsp;&nbsp;&nbsp;http://openbuildspartstore.com/eccen
 <br>
 Misumi
 -----
-350mm 2060 extrusion, HFS5-2060-350.  This can be larger if you like.<br>
+350mm 2060 extrusion, HFS5-2060-350.  This can be larger if you like, but you'll need to recalculate the triangles and rod lengths.<br>
 <br>
 Printed Bits
 -----
