@@ -21,11 +21,11 @@ belt_width=6;
 
 
 //hotend effector vars
-arm_rad = 27;
+arm_rad = 27+6.5;
 
-extruder_rad = 13.5;
+extruder_rad = 13.5+6.5; //mounting radius.
 //hotend_attachment_rad = 23;
-hotend_rad = 8.15;
+hotend_rad = 8.15; //radius of the hotend clamp
 //mount_height=12.5;
 
 
@@ -43,8 +43,12 @@ rail_effector();
 translate([arm_sep/2,0,rod_inset_r+.1]) rotate([0,0,-38]) rotate([30,0,0]) rotate([0,90,0])
 rod_end();
 
-translate([0,0,0]){
-!	hotend_effector();
+!translate([0,0,0]){
+	difference(){
+            hotend_effector();
+            //translate([0,0,wall]) cylinder(r=24/2, h=100, $fn=6); 
+            cylinder(r=18/2+.2, h=100, center=true, $fn=90);
+    }
 	
 	translate([0, -arm_rad+1, 17]) bearing_bar();
 }
@@ -110,10 +114,10 @@ module arm_mounts(solid=1, height=5, inset=25){
 
 module hotend_effector_body(solid=1, height=15){
 	if(solid==1){
-		cylinder(r=45, h=height);
+		cylinder(r=50, h=height);
 	}else{
 		for(i=[0:120:359]) rotate([0,0,i]) translate([0,- arm_rad, -.5]) hull(){
-			translate([0,0,0]) scale([1,.45,1]) cylinder(r=arm_mount_sep/2,h=height+1);
+			translate([0,0,0]) scale([1,.75,1]) cylinder(r=arm_mount_sep/2,h=height+1);
 			translate([0,-arm_mount_sep,0]) cylinder(r=arm_mount_sep/2,h=height+1);
 		}
 	}
@@ -146,12 +150,12 @@ module rod_end_helper(solid=1){
 	for(i=[0,1]) mirror([i,0,0]) translate([rodend_jaw_sep/2+slop/2,0,0]) rotate([0,90,0]) rotate([0,0,180]) 623_bearing_cone(rad = 623_rad-1, height=1, solid=solid);
 }
 
-module rod_end(){
+module rod_end(center=1){
 	jaw_depth = 18;
 	rod_width = 8.5+slop;
 	rod_len = 24;
 	clamp_extra=2;
-	translate([0,0,rod_width/sqrt(2)+wall/4-.75]) 
+	translate([0,0,center*(rod_width/sqrt(2)+wall/4-.75)]) 
 	difference(){
 		union(){
 			rod_end_helper(solid=1);
@@ -318,7 +322,12 @@ module bearing_bar_helper(solid=1){
 		}
 			
 		//bearing mounts for middle bearings
-		for(j=[0,1]) mirror([0,j,0]) translate([arm_sep/2,0,1]) rotate([-90,0,0]) 623_bearing_mount(rad=623_rad+2, height=623_width+spacer_len/2, solid=solid);
+		for(j=[0,1]) mirror([0,j,0]) translate([arm_sep/2,0,1]) {
+                    rotate([-90,0,0]) 623_bearing_mount(rad=623_rad+2, height=623_width+spacer_len/2, solid=solid);
+                    %mirror([0,0,j]) rotate([-90,0,0]) rotate([0,90,0]) rod_end(center=0);
+                }
+                    
+                
 	}
 }
 

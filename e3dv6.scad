@@ -22,20 +22,22 @@ angle=130;
 
 m3_rad = 2.9/2;
 
+height = 28;
+
 $fn=72;
 
-duct_2();
+//duct_2();
+duct_2(extra_base = 0, height=28);
 
 //more minimal duct, that'll slip in above the heat block
-module duct_2(){
-	height = 28;
+module duct_2(extra_base = 0){
 	wall=2;
 	
 	difference(){
 		translate([0,0,(height-fan)/2]) hull(){
-			translate([0, heatsink_rad+offset+wall/2]) cube([fan, wall, height], center=true);
+			translate([0, heatsink_rad+offset+wall/2, -extra_base/2]) cube([fan, wall, height+extra_base], center=true);
 
-			cylinder(r=heatsink_rad+wall, h=height, center=true);
+			translate([0, 0, -extra_base/2]) cylinder(r=heatsink_rad+wall, h=height+extra_base, center=true);
 		}
 
 		//cut out the heatsink
