@@ -122,11 +122,11 @@ if (metalPartsOnly == false) {
 	main();
     rotate([0,0,90]) difference(){
         union(){
-            arm_mounts(solid=1, height=10, inset=25, rounding=10);
+            arm_mounts(solid=1, height=10, inset=23, rounding=10);
             hotend_effector_body(solid=1, height=10);
         }
         
-        arm_mounts(solid=0, height=10, inset=25, rounding=10);
+        arm_mounts(solid=0, height=10, inset=23, rounding=10);
         hotend_effector_body(solid=0, height=10);
         translate([0,0,-.1]) cylinder(r=radius_up, h=fan_pos-coldend_offset-flange_h+2);
     }
