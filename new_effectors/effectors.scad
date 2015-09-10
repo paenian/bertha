@@ -106,8 +106,8 @@ module hotend_tripleclamp(tap_height = 0, height = 10, solid=1){
 		translate([0,extruder_rad,0]) extruder_mount(solid,height,0,tap_height);
 }
 
-module arm_mounts(solid=1, height=5, inset=25){
-	for(i=[0:120:359]) rotate([0,0,i]) translate([0,-arm_rad, 0]) arm_bearings(solid=solid, height=height, inset=inset, offset=0, base_height=0);
+module arm_mounts(solid=1, height=5, inset=25, rounding=0){
+	for(i=[0:120:359]) rotate([0,0,i]) translate([0,-arm_rad, 0]) arm_bearings(solid=solid, height=height, inset=inset, offset=0, base_height=0, rounding=rounding);
 
 	//translate([0, -arm_rad, -623_rad]) bearing_bar();
 }
@@ -222,7 +222,7 @@ module wheel_mount(solid=1, rad=6, height=5, eccentric=0){
 	}
 }
 
-module arm_bearings(solid=1, height=5, inset=10, offset=0, base_height=0){
+module arm_bearings(solid=1, height=5, inset=10, offset=0, base_height=0, rounding=0){
 	h = 623_width+2;
 	m_rad = 2;
 
@@ -238,7 +238,7 @@ module arm_bearings(solid=1, height=5, inset=10, offset=0, base_height=0){
 					translate([arm_mount_sep/2+h+slop/2+1.5,(-623_rad-2)*2,0]) rotate([0,-90,0]) cube([inset+623_rad+2,offset+623_rad*6,arm_mount_sep+slop/2+h*2+3]);	
 				}
 				hull() for(i=[0:1]) mirror([i,0,0]) {
-					translate([arm_mount_sep/2-h*2+m_rad,623_rad*3+6-inset/cos(30),base_height+h*2-m_rad]) rotate([90,0,0]) cylinder(r=h*2, h=50, center=true);
+					translate([arm_mount_sep/2-h*2+m_rad,623_rad*3+6-inset/cos(30),base_height+h*2-m_rad-rounding]) rotate([90,0,0]) cylinder(r=h*2, h=50, center=true);
 
 					translate([arm_mount_sep/2+h-h*2+1+m_rad,623_rad*3+6-inset/cos(30),base_height+h*5]) rotate([90,0,0]) cylinder(r=h, h=50, center=true);
 				}
