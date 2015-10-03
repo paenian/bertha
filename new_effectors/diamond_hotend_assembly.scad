@@ -441,7 +441,7 @@ module deflectors() {
 
 //Hole for wires
 module wirehole() {
-	translate([-fan_width/2, 0, fan_pos]){
+	rotate([0,0,100]) translate([-fan_width/2, 0, fan_pos]){
         if(rostock && rostock < 3) translate([fan_width/2-rostock_D/2-0.1,-8/2,-rostock_h-0.1])
             cube([rostock_D/2-fan_width/2,8,rostock_h+0.2]);
         rotate([0, 160, 0])
