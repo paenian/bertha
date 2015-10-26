@@ -119,14 +119,25 @@ rostock_platform_R2=cos(rostock_platform_theta)*(rostock_platform_D1/2+rostock_p
 
 
 if (metalPartsOnly == false) {
+    spar_height = fan_pos-coldend_offset-flange_h;
+    spar_length = 40;
+    spar_width = 5;
 	main();
     rotate([0,0,90]) difference(){
         union(){
-            arm_mounts(solid=1, height=10, inset=23, rounding=10);
-            hotend_effector_body(solid=1, height=10);
+            for(i=[0:120:359]) rotate([0,0,i]) {
+                for(i=[0:1]) hull(){
+                    mirror([i,0,0]) rotate([0,0,240*i]) arm_mount_outer(solid=1, height=10, inset=24, rounding=10);
+                    rotate([0,0,-90-30]) translate([-spar_width/2,spar_length,0]) cube([spar_width,spar_width,spar_height]);
+                }
+            }
+            
+            for(i=[0:120:359]) rotate([0,0,i]){
+                rotate([0,0,-90-30]) translate([-spar_width/2,0,0]) cube([spar_width,spar_length,spar_height]);
+            }
         }
         
-        arm_mounts(solid=0, height=10, inset=23, rounding=10);
+        arm_mounts_outer(solid=0, height=10, inset=24, rounding=10);
         hotend_effector_body(solid=0, height=10);
         translate([0,0,-.1]) cylinder(r=radius_up, h=fan_pos-coldend_offset-flange_h+2);
     }
@@ -139,7 +150,7 @@ if (metalPartsOnly == false) {
 
 //MAIN
 module main() {
-	rotate([180, 0, 0])
+    rotate([180, 0, 0])
 	translate([0, 0, -fan_pos])
 	union() {
 		difference() {
@@ -329,7 +340,7 @@ module duct() {
 	difference() {
 		union() {
 			translate ([0, 0, coldend_offset+flange_h])
-            cylinder(r=radius_up+wall, h=fan_pos-coldend_offset-flange_h);
+            cylinder(r2=radius_up+wall+wall, r1=radius_up+wall, h=fan_pos-coldend_offset-flange_h);
             //The rostock bit
             if(rostock && rostock<3) translate ([0, 0, fan_pos-rostock_h])
                 cylinder(d=rostock_D,h=rostock_h);
@@ -444,7 +455,7 @@ module wirehole() {
 	rotate([0,0,100]) translate([-fan_width/2, 0, fan_pos]){
         if(rostock && rostock < 3) translate([fan_width/2-rostock_D/2-0.1,-8/2,-rostock_h-0.1])
             cube([rostock_D/2-fan_width/2,8,rostock_h+0.2]);
-        rotate([0, 160, 0])
+        rotate([0, 155, 0])
         union() {
             cylinder(r=8/2, h=2*(fan_pos-coldend_offset-flange_h), center=true);
             

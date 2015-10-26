@@ -116,7 +116,7 @@ module 623_bearing_mount(rad = 623_rad+2, height=5, solid=1){
 	}else{
 		translate([0,0,height-623_width+slop]) cap_cylinder(r=623_rad, h=623_width*2);
 		//translate([0,0,height-623_width]) cap_cylinder(r=623_outer_shoulder, h=623_width*2);
-		translate([0,0,-height]) cap_cylinder(r=m3_cap_rad+.25, h=height*3);
+		translate([0,0,-height]) cap_cylinder(r=m3_cap_rad+.25, h=height*30);
 	}
 }
 

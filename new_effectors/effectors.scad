@@ -21,7 +21,7 @@ belt_width=6;
 
 
 //hotend effector vars
-arm_rad = 27+6.5;
+arm_rad = 27+6.5+5+1.5+2;
 
 extruder_rad = 13.5+6.5; //mounting radius.
 //hotend_attachment_rad = 23;
@@ -43,7 +43,7 @@ rail_effector();
 translate([arm_sep/2,0,rod_inset_r+.1]) rotate([0,0,-38]) rotate([30,0,0]) rotate([0,90,0])
 rod_end();
 
-!translate([0,0,0]){
+translate([0,0,0]){
 	difference(){
             hotend_effector();
             //translate([0,0,wall]) cylinder(r=24/2, h=100, $fn=6); 
@@ -52,6 +52,8 @@ rod_end();
 	
 	translate([0, -arm_rad+1, 17]) bearing_bar();
 }
+
+!arm_mounts_outer_joint();
 
 //bearing bar + rod ends for printing
 union(){
@@ -104,6 +106,54 @@ module hotend_tripleclamp(tap_height = 0, height = 10, solid=1){
 	//extruder mounts
 	for(i=[0:120:359]) rotate([0,0,i]) mirror([0,0,1]) translate([0,0,-height]) 
 		translate([0,extruder_rad,0]) extruder_mount(solid,height,0,tap_height);
+}
+
+module arm_mounts_outer_joint(solid=1, height=5, inset=35, rounding=0){
+    rad = 20.25;
+    *intersection(){
+        rotate([0,0,0]) translate([0,-arm_rad, 0]) arm_bearings(solid=solid, height=height, inset=inset, offset=0, base_height=0, rounding=rounding);
+        rotate([0,0,180]) cube([200,200,200]);
+    }
+    
+    *rotate([0,0,240]) intersection(){
+        translate([0,-arm_rad, 0]) arm_bearings(solid=solid, height=height, inset=inset, offset=0, base_height=0, rounding=rounding);
+        rotate([0,0,270]) cube([200,200,200]);
+    }
+    
+    //weird curvy
+    *intersection(){
+        translate([-arm_sep+4,rad-arm_rad-1+2,inset-11]) rotate_extrude(){
+            translate([rad,0,0]) circle(r=623_rad*2-2.25);
+        }
+        rotate([0,0,180+30]) translate([85,0,0]) rotate([0,0,270-30]) cylinder(r=50, h=100, $fn=6);
+    }
+    
+    //just a straight hull
+     {
+         {
+            translate([0,-arm_rad, 0]) translate([arm_mount_sep/2+height+slop/2,1,inset]) rotate([0,-90,0]) rotate([0,0,90]) 623_bearing_mount(rad=623_rad+wall/2, height=height, solid=1);
+        }
+    }
+}
+
+module arm_mount_outer(solid=1, height=5, inset=25, rounding=0){
+	if(solid==0){
+        translate([0,-arm_rad, 0]) arm_bearings(solid=solid, height=height, inset=inset, offset=0, base_height=0, rounding=rounding);
+    }else{
+        arm_mounts_outer_joint(solid=solid, height=height, inset=inset, rounding=rounding);
+    }
+
+	//translate([0, -arm_rad, -623_rad]) bearing_bar();
+}
+
+module arm_mounts_outer(solid=1, height=5, inset=25, rounding=0){
+	if(solid==0){
+        for(i=[0:120:359]) rotate([0,0,i]) translate([0,-arm_rad, 0]) arm_bearings(solid=solid, height=height, inset=inset, offset=0, base_height=0, rounding=rounding);
+    }else{
+        for(i=[0:120:359]) rotate([0,0,i]) arm_mounts_outer_joint(solid=solid, height=height, inset=inset, rounding=rounding);
+    }
+
+	//translate([0, -arm_rad, -623_rad]) bearing_bar();
 }
 
 module arm_mounts(solid=1, height=5, inset=25, rounding=0){
