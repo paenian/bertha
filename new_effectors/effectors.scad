@@ -35,7 +35,7 @@ echo(arm_sep);
 
 //This is a rail effector assembled.
 translate([0,0,rod_inset_r]) rotate([90,0,0]) translate([0,0,-wall])
-bearing_bar();
+!bearing_bar();
 
 rotate([0,0,180])
 rail_effector();
@@ -53,7 +53,7 @@ translate([0,0,0]){
 	translate([0, -arm_rad+1, 17]) bearing_bar();
 }
 
-!arm_mounts_outer_joint();
+arm_mounts_outer_joint();
 
 //bearing bar + rod ends for printing
 union(){
@@ -363,10 +363,14 @@ module rail_effector(){
 }
 
 module bearing_bar_helper(solid=1){
+    
+    base = (arm_mount_sep-arm_sep)/2;
+    
 	for(i=[0:1]) mirror([i,0,0]){
 		//bearing cones for end bearings
-		if(solid==1){
+		if(solid==1) hull() {
 			translate([arm_mount_sep/2,0,1]) rotate([0,-90,0]) 623_bearing_cone(rad = wall+wall/2, height = wall+.25, solid=solid);
+            translate([arm_mount_sep/2-base*2,0,1]) rotate([0,90,0]) 623_bearing_cone(rad = wall+wall/2, height = wall+.25, solid=solid);
 		}else{
 			translate([arm_mount_sep/2,0,1]) rotate([0,-90,0]) 623_bearing_cone(rad = wall+wall/2, height = wall+.25, solid=solid, nut_trap=1);
 		}
@@ -382,12 +386,12 @@ module bearing_bar_helper(solid=1){
 }
 
 module bearing_bar(){
-	translate([0,0,wall])
 	difference(){
 		union(){
 			bearing_bar_helper(solid=1);
 			//connect 'em up
-			rotate([0,90,0]) cylinder(r=wall+wall/2+1, h=arm_mount_sep-623_rad*2, center=true);
+			translate([0,0,1]) rotate([0,90,0]) cylinder(r=m3_cap_rad, h=arm_sep, center=true, $fn=6);
+            
 		}
 
 		//cut off the front, back and bottom
@@ -399,7 +403,7 @@ module bearing_bar(){
 		bearing_bar_helper(solid=0);
 
 		//make some speed holes
-		for(i=[0,1]) mirror([i,0,0]) translate([623_rad+2,0,0]) rotate([90,0,0]) rotate([0,0,30]) cylinder(r=623_rad-2, h=40, center=true, $fn=6);
-		rotate([90,0,0]) rotate([0,0,30]) cylinder(r=623_rad-2, h=40, center=true, $fn=6);
+		*for(i=[0,1]) mirror([i,0,0]) translate([623_rad+2,0,0]) rotate([90,0,0]) rotate([0,0,30]) cylinder(r=623_rad-2, h=40, center=true, $fn=6);
+		*rotate([90,0,0]) rotate([0,0,30]) cylinder(r=623_rad-2, h=40, center=true, $fn=6);
 	}
 }

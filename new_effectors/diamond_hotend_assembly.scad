@@ -103,6 +103,8 @@ rostock_platform_base_offset=50;
 rostock_platform_pivot_r=1.58753;
 rostock_platform_pivot_R=31.2493;
 
+ind_rad = 18/2+slop;
+
 
 //calculations
 pythagoras=sqrt((22/2)*(22/2)+coldend_offset*coldend_offset);
@@ -119,6 +121,10 @@ rostock_platform_R2=cos(rostock_platform_theta)*(rostock_platform_D1/2+rostock_p
 
 
 if (metalPartsOnly == false) {
+   
+    ind_offset = 53;
+    ind_lift = 15;
+    
     spar_height = fan_pos-coldend_offset-flange_h;
     spar_length = 40;
     spar_width = 5;
@@ -127,7 +133,7 @@ if (metalPartsOnly == false) {
         union(){
             for(i=[0:120:359]) rotate([0,0,i]) {
                 for(i=[0:1]) hull(){
-                    mirror([i,0,0]) rotate([0,0,240*i]) arm_mount_outer(solid=1, height=10, inset=24, rounding=10);
+                    mirror([i,0,0]) rotate([0,0,240*i]) arm_mount_outer(solid=1, height=10, inset=24+6, rounding=10);
                     rotate([0,0,-90-30]) translate([-spar_width/2,spar_length,0]) cube([spar_width,spar_width,spar_height]);
                 }
             }
@@ -135,9 +141,14 @@ if (metalPartsOnly == false) {
             for(i=[0:120:359]) rotate([0,0,i]){
                 rotate([0,0,-90-30]) translate([-spar_width/2,0,0]) cube([spar_width,spar_length,spar_height]);
             }
+            //extruder mount
+            translate([0, ind_offset, 0]) mirror([1,0,0]) rotate([0,0,60]) extruder_mount(solid=1, m_height=ind_lift+.1,  hotend_rad=ind_rad);
+            translate([0, ind_offset, ind_lift]) mirror([1,0,0]) rotate([0,0,60]) extruder_mount(solid=1, m_height=12,  hotend_rad=ind_rad);
         }
         
-        arm_mounts_outer(solid=0, height=10, inset=24, rounding=10);
+       translate([0,ind_offset,ind_lift]) mirror([1,0,0]) rotate([0,0,60]) extruder_mount(0, m_height=12,  hotend_rad=ind_rad);
+        
+        arm_mounts_outer(solid=0, height=10, inset=24+6, rounding=10);
         hotend_effector_body(solid=0, height=10);
         translate([0,0,-.1]) cylinder(r=radius_up, h=fan_pos-coldend_offset-flange_h+2);
     }
@@ -163,7 +174,12 @@ module main() {
                 if (rostock && rostock<3) rostock_supports();
                 if (rostock == 4) rostock_platform_base();
                 if (rostock == 5) bertha_platform_base(solid=1);
+                    
+                
+                
 			}
+            
+             
 			
 			union() {
 				if (assembled == true) {
@@ -684,4 +700,41 @@ module rostock_platform_supports(){
 
 module bertha_platform_base(solid=0){
     
+}
+
+module extruder_mount(solid = 1, m_height = 10, m_thickness=50, fillet = 8, tap_height=0, width=20){
+	gap = 3;
+	tap_dia = 9.1;
+	tap_rad = tap_dia/2;
+	
+	clamp_offset = 1.5+1.5;
+    nut_rad = 5;
+    
+    bolt_rad = m3_rad;
+
+	if(solid){		
+		//clamp material
+		if(m_height > nut_rad*2){
+			cylinder(r=(hotend_rad+wall)/cos(30), h=m_height, $fn=6);
+			translate([hotend_rad+bolt_rad+clamp_offset,gap,m_height/2]) rotate([-90,0,0]) cylinder(r=m_height/2/cos(30), h=wall+1, $fn=6);
+			translate([hotend_rad+bolt_rad+clamp_offset,-wall-1,m_height/2]) rotate([-90,0,0]) cylinder(r=m_height/2/cos(30), h=wall+1, $fn=6);
+		}
+	}else{
+		union(){
+			//hotend hole
+			translate([0,0,-.05]) cylinder(r=hotend_rad/cos(180/18)+.1, h=m_height*3, $fn=36);
+            //flare the underside
+            translate([0,0,-16]) cylinder(r1=hotend_rad/cos(180/18)+2 , r2=hotend_rad/cos(180/18)+.1, h=16, $fn=36);
+
+			//bolt slots
+			if(m_height > nut_rad*2){
+				render() translate([hotend_rad+bolt_rad+clamp_offset,-m_thickness-.05,m_height/2]) rotate([-90,0,0]) cap_cylinder(r=m3_rad, h=m_thickness+10);
+				translate([hotend_rad+bolt_rad+clamp_offset,-wall*3.5-1,m_height/2]) rotate([-90,0,0]) cylinder(r2=m3_nut_rad+1, r1=m3_nut_rad, h=wall*3, $fn=6);
+
+				//mount tightener
+				translate([hotend_rad+bolt_rad+clamp_offset,wall+gap+1,m_height/2]) rotate([-90,0,0]) cylinder(r=m3_cap_rad, h=10);
+				translate([0,0,-m_height*2]) cube([wall*5, gap, m_height*4+.1]);
+			}
+		}
+	}
 }
