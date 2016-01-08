@@ -21,13 +21,15 @@ belt_width=6;
 
 
 //hotend effector vars
-arm_rad = 27+6.5+5+1.5+2;
+arm_rad = 27+6.5+5+1.5+2-5-2-1.5-1.5;
 
-extruder_rad = 13.5+6.5; //mounting radius.
+extruder_rad = 13.5+6.5+.5+.5+1; //mounting radius.
 //hotend_attachment_rad = 23;
 hotend_rad = 8.15; //radius of the hotend clamp
 //mount_height=12.5;
 
+ind_lift = 10;
+ind_rad = 18/2+slop;
 
 echo(arm_sep);
 
@@ -35,7 +37,7 @@ echo(arm_sep);
 
 //This is a rail effector assembled.
 translate([0,0,rod_inset_r]) rotate([90,0,0]) translate([0,0,-wall])
-!bearing_bar();
+bearing_bar();
 
 rotate([0,0,180])
 rail_effector();
@@ -43,14 +45,21 @@ rail_effector();
 translate([arm_sep/2,0,rod_inset_r+.1]) rotate([0,0,-38]) rotate([30,0,0]) rotate([0,90,0])
 rod_end();
 
-translate([0,0,0]){
+!translate([0,0,0]){
 	difference(){
+        union(){
             hotend_effector();
+            //translate([0, 0, ind_lift]) mirror([1,0,0]) rotate([0,0,60]) extruder_mount(solid=1, m_height=12,  hotend_rad=ind_rad);
             //translate([0,0,wall]) cylinder(r=24/2, h=100, $fn=6); 
-            cylinder(r=18/2+.2, h=100, center=true, $fn=90);
+        }
+        cylinder(r=18/2+.2, h=100, center=true, $fn=90);
+        for(i=[0:120:359]) translate([0,0,wall+m3_rad]) rotate([0,0,i]) {
+            rotate([90,0,0]) cylinder(r=m3_rad, h=50);
+            rotate([90,0,0]) cylinder(r1=m3_nut_rad+1, r2=m3_nut_rad, h=ind_rad+m3_nut_height, $fn=6);
+        }
     }
 	
-	translate([0, -arm_rad+1, 17]) bearing_bar();
+	translate([0, -arm_rad+1, 21]) bearing_bar();
 }
 
 arm_mounts_outer_joint();
@@ -104,8 +113,8 @@ module extruder_mount(solid = 1, m_height = 15, fillet = 8, tap_height=0){
 
 module hotend_tripleclamp(tap_height = 0, height = 10, solid=1){
 	//extruder mounts
-	for(i=[0:120:359]) rotate([0,0,i]) mirror([0,0,1]) translate([0,0,-height]) 
-		translate([0,extruder_rad,0]) extruder_mount(solid,height,0,tap_height);
+	for(i=[60:120:359]) rotate([0,0,i]) mirror([0,0,1]) translate([0,0,-height]) 
+		translate([0,extruder_rad,0]) rotate([0,0,-45]) extruder_mount(solid,height,0,tap_height);
 }
 
 module arm_mounts_outer_joint(solid=1, height=5, inset=35, rounding=0){
@@ -164,10 +173,10 @@ module arm_mounts(solid=1, height=5, inset=25, rounding=0){
 
 module hotend_effector_body(solid=1, height=15){
 	if(solid==1){
-		cylinder(r=50, h=height);
+		cylinder(r=51, h=height);
 	}else{
 		for(i=[0:120:359]) rotate([0,0,i]) translate([0,- arm_rad, -.5]) hull(){
-			translate([0,0,0]) scale([1,.75,1]) cylinder(r=arm_mount_sep/2,h=height+1);
+			translate([0,0,0]) scale([1,.55,1]) cylinder(r=arm_mount_sep/2,h=height+1);
 			translate([0,-arm_mount_sep,0]) cylinder(r=arm_mount_sep/2,h=height+1);
 		}
 	}
