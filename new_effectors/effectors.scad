@@ -93,7 +93,7 @@ module extruder_mount(solid = 1, m_height = 15, fillet = 8, tap_height=0){
 
 			//bolt slots
 			if(m_height > m3_nut_rad*2){
-				#translate([hotend_rad+m3_rad+1,0,m_height/2]) rotate([90,0,0]) cap_cylinder(r=m3_rad, h=wall*4+gap, center=true);
+				translate([hotend_rad+m3_rad+1,0,m_height/2]) rotate([90,0,0]) cap_cylinder(r=m3_rad, h=wall*4+gap, center=true);
 				translate([hotend_rad+m3_rad+1,-wall-m3_nut_height-1,m_height/2]) hull(){
 					rotate([-90,0,0]) rotate([0,0,30]) cylinder(r1=m3_nut_rad+.1, r2=m3_nut_rad, h=m3_nut_height+.75, $fn=6);
 					translate([0,0,-m_height/2]) rotate([-90,0,0]) rotate([0,0,30]) cylinder(r1=m3_nut_rad+.25, r2=m3_nut_rad, h=m3_nut_height+.75, $fn=6);
@@ -101,7 +101,7 @@ module extruder_mount(solid = 1, m_height = 15, fillet = 8, tap_height=0){
 
 				//mount tightener
 				translate([hotend_rad+m3_rad+1,wall+gap,m_height/2]) rotate([-90,0,0]) cylinder(r=m3_cap_rad, h=10);
-				#translate([hotend_rad+m3_rad+1,wall+gap,m_height/2]) rotate([-90,0,0]) cylinder(r=m3_rad, h=10);
+				translate([hotend_rad+m3_rad+1,wall+gap,m_height/2]) rotate([-90,0,0]) cylinder(r=m3_rad, h=10);
 
 				//gap
 				//translate([0,gap/2,-.05]) cube([wall*3.5, gap, m_height+.1]);
@@ -387,7 +387,7 @@ module bearing_bar_helper(solid=1){
 		//bearing mounts for middle bearings
 		for(j=[0,1]) mirror([0,j,0]) translate([arm_sep/2,0,1]) {
                     rotate([-90,0,0]) 623_bearing_mount(rad=623_rad+2, height=623_width+spacer_len/2, solid=solid);
-                    %mirror([0,0,j]) rotate([-90,0,0]) rotate([0,90,0]) rod_end(center=0);
+                    %mirror([0,0,j]) rotate([0,-20,0]) rotate([-90,0,0]) rotate([0,90,0]) rod_end(center=0);
                 }
                     
                 

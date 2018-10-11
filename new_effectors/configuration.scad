@@ -94,7 +94,7 @@ module 623_bearing_cone(rad = 623_rad, height = 5, solid=1, nut_trap=0){
 			//bore
 			translate([0,0,-.1]) rotate([0,0,90]) cap_cylinder(r=623_bore, h=height+.5);
 			//nut trap
-			#translate([0,0,height-m3_nut_height]) hull(){
+			translate([0,0,height-m3_nut_height]) hull(){
 				cylinder(r1=m3_nut_rad, r2=m3_nut_rad+.5, h=m3_nut_height+.5, $fn=6);
 				translate([30,0,0]) cylinder(r1=m3_nut_rad, r2=m3_nut_rad+.5, h=m3_nut_height+.5, $fn=6);
 			}

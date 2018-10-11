@@ -126,31 +126,38 @@ if (metalPartsOnly == false) {
     ind_lift = 15;
     
     spar_height = fan_pos-coldend_offset-flange_h;
-    spar_length = 40;
-    spar_width = 5;
+    spar_length = 53;
+    spar_width = 6;
+    spar_angle = 33;
+    
+    bar_drop = 41;
+    
 	main();
     rotate([0,0,90]) difference(){
         union(){
             for(i=[0:120:359]) rotate([0,0,i]) {
-                for(i=[0:1]) hull(){
-                    mirror([i,0,0]) rotate([0,0,240*i]) arm_mount_outer(solid=1, height=10, inset=24+6, rounding=10);
-                    rotate([0,0,-90-30]) translate([-spar_width/2,spar_length,0]) cube([spar_width,spar_width,spar_height]);
+                hull() for(j=[0:1]) {
+                    mirror([j,0,0]) rotate([0,0,240*j]) arm_mount_outer(solid=1, height=10, inset=bar_drop, rounding=10);
+                    rotate([0,0,-90-30]) translate([0,-spar_width,0]) rotate([spar_angle,0,0]) translate([-spar_width/2,spar_length,0]) rotate([-spar_angle,0,0]) cube([spar_width,spar_width,spar_height]);
                 }
+                
+                //draw in the bars
+                %translate([0, -24-7, bar_drop]) bearing_bar();
             }
             
-            for(i=[0:120:359]) rotate([0,0,i]){
-                rotate([0,0,-90-30]) translate([-spar_width/2,0,0]) cube([spar_width,spar_length,spar_height]);
+            for(i=[0:120:359]) rotate([0,0,i]) hull() {
+                rotate([0,0,-90-30]) rotate([spar_angle,0,0]) translate([-spar_width/2,0,0]) cube([spar_width,spar_length,spar_height]);
+                rotate([0,0,-90-30]) translate([0,-spar_width,0]) rotate([spar_angle,0,0]) translate([-spar_width/2,spar_length,0]) rotate([-spar_angle,0,0]) cube([spar_width,spar_width,spar_height]);
             }
-            //extruder mount
-            translate([0, ind_offset, 0]) mirror([1,0,0]) rotate([0,0,60]) extruder_mount(solid=1, m_height=ind_lift+.1,  hotend_rad=ind_rad);
-            translate([0, ind_offset, ind_lift]) mirror([1,0,0]) rotate([0,0,60]) extruder_mount(solid=1, m_height=12,  hotend_rad=ind_rad);
+            //todo: bed level sensor mount
         }
         
-       translate([0,ind_offset,ind_lift]) mirror([1,0,0]) rotate([0,0,60]) extruder_mount(0, m_height=12,  hotend_rad=ind_rad);
-        
-        arm_mounts_outer(solid=0, height=10, inset=24+6, rounding=10);
+        arm_mounts_outer(solid=0, height=10, inset=bar_drop, rounding=10);
         hotend_effector_body(solid=0, height=10);
-        translate([0,0,-.1]) cylinder(r=radius_up, h=fan_pos-coldend_offset-flange_h+2);
+        translate([0,0,-.1]) hull(){
+            cylinder(r=radius_up, h=fan_pos-coldend_offset-flange_h+2);
+            cylinder(r=radius_lo, h=fan_pos-coldend_offset-5);
+        }
     }
 } else {
 	hotend();
@@ -473,7 +480,7 @@ module wirehole() {
             cube([rostock_D/2-fan_width/2,8,rostock_h+0.2]);
         rotate([0, 155, 0])
         union() {
-            cylinder(r=8/2, h=2*(fan_pos-coldend_offset-flange_h), center=true);
+            cylinder(r=9/2, h=2*(fan_pos-coldend_offset-flange_h), center=true);
             
             //zip-tie holes
             translate([0, 0, fan_pos-coldend_offset-flange_h])
