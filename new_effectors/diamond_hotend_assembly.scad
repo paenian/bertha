@@ -58,6 +58,8 @@ mounting_thickness = 5;			// Mounting plate thickness
 retention_amount = 1.2;			// metal parts rest point snap-in amount
 retention_width = 10;			// metal parts rest width
 
+acc_screw_sep = 8;      //accessory screws mount
+
 blower_screwpos = 40;
 blower_screwpos_X1 = -20.15;
 blower_screwpos_Y1 = 20.3;
@@ -148,8 +150,25 @@ if (metalPartsOnly == false) {
             for(i=[0:120:359]) rotate([0,0,i]) hull() {
                 rotate([0,0,-90-30]) rotate([spar_angle,0,0]) translate([-spar_width/2,0,0]) cube([spar_width,spar_length,spar_height]);
                 rotate([0,0,-90-30]) translate([0,-spar_width,0]) rotate([spar_angle,0,0]) translate([-spar_width/2,spar_length,0]) rotate([-spar_angle,0,0]) cube([spar_width,spar_width,spar_height]);
+                
+                //beef up the bar a bit
+                rotate([0,0,-90-30]) translate([0,radius_up+7,0]) rotate([spar_angle*2,0,0]) translate([-spar_width/6,0,0]) cube([spar_width/3,spar_length/2,spar_height]);
             }
-            //todo: bed level sensor mount
+        }
+        
+        //accesory mounts on the arms
+        for(i=[0:120:359]) rotate([0,0,i]) translate([0,spar_length,bar_drop]) {
+            //flat
+            translate([0,5,0]) cube([50,10,100], center=true);
+            
+            //screwholes
+            for(i=[0,1]) mirror([0,0,i]) translate([0,0,acc_screw_sep/2]) rotate([90,0,0]) {
+                cap_cylinder(r=m3_rad+slop, h=15, center=true);
+                translate([0,0,2]) hull(){
+                    rotate([0,0,30]) cylinder(r1=m3_nut_rad, r2=m3_nut_rad+.5, h=m3_nut_height+.5, $fn=6);
+                    translate([0,10,0]) rotate([0,0,30]) cylinder(r1=m3_nut_rad, r2=m3_nut_rad+.5, h=m3_nut_height+.5, $fn=6);
+                }
+            }
         }
         
         arm_mounts_outer(solid=0, height=10, inset=bar_drop, rounding=10);
