@@ -6,6 +6,9 @@
 slop = .2;
 wall = 5;
 
+//hotend effector vars
+arm_rad = 41;
+
 
 
 ////////////////////////////

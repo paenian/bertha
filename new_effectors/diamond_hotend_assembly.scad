@@ -128,7 +128,7 @@ if (metalPartsOnly == false) {
     ind_lift = 15;
     
     spar_height = fan_pos-coldend_offset-flange_h;
-    spar_length = 53;
+    spar_length = 57;
     spar_width = 6;
     spar_angle = 33;
     
@@ -140,11 +140,11 @@ if (metalPartsOnly == false) {
             for(i=[0:120:359]) rotate([0,0,i]) {
                 hull() for(j=[0:1]) {
                     mirror([j,0,0]) rotate([0,0,240*j]) arm_mount_outer(solid=1, height=10, inset=bar_drop, rounding=10);
-                    rotate([0,0,-90-30]) translate([0,-spar_width,0]) rotate([spar_angle,0,0]) translate([-spar_width/2,spar_length,0]) rotate([-spar_angle,0,0]) cube([spar_width,spar_width,spar_height]);
+                    rotate([0,0,-90-30]) translate([0,-spar_width,0]) rotate([spar_angle,0,0]) translate([-spar_width/3,spar_length,-spar_height*.333]) rotate([-spar_angle*0,0,0]) cube([spar_width*2/3,spar_width,spar_height*1]);
                 }
                 
                 //draw in the bars
-                %translate([0, -24-7, bar_drop]) bearing_bar();
+                %translate([0, -arm_rad, bar_drop]) bearing_bar();
             }
             
             for(i=[0:120:359]) rotate([0,0,i]) hull() {

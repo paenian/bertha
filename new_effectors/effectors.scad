@@ -20,9 +20,6 @@ wheel_z_sep = 60;
 belt_width=6;
 
 
-//hotend effector vars
-arm_rad = 27+6.5+5+1.5+2-5-2-1.5-1.5;
-
 extruder_rad = 13.5+6.5+.5+.5+1; //mounting radius.
 //hotend_attachment_rad = 23;
 hotend_rad = 8.15; //radius of the hotend clamp
