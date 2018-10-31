@@ -8,9 +8,31 @@ sensor_rad = 20/2;
 sensor_width = 9;
 sensor_length = 50+15;
 
-sensor_pad(height = wall+2.5);
+bed_rad = 309/2;
+
+bed_clamp();
+
+//sensor_pad(height = wall+2.5);
 
 //bed_retainer(start_height = wall+2.5, bed_thick = 7.5, glass_thick=3, bed_rad = 300/2);
+
+
+module bed_clamp(bed_lift = 5, bed_thick = 11){
+    clip_rad = 17;
+    rotate([-90,0,0]) difference(){
+        union(){
+            cylinder(r=clip_rad,h=bed_lift+bed_thick+1.5, $fn=6);
+        }
+        translate([-bed_rad,0,bed_lift]) cylinder(r=bed_rad, h=bed_thick);
+        translate([-bed_rad-wall,0,bed_lift*1.5]) cylinder(r=bed_rad, h=bed_thick);
+        
+        //screwhole
+        translate([clip_rad/2,0,0]) {
+            cap_cylinder(r=m5_rad, h=bed_thick*5, center=true);
+            translate([0,0,5]) cap_cylinder(r=m5_cap_rad+.5, h=bed_thick*5);
+        }
+    }
+}
 
 module sensor_footprint(height = wall){
 	translate([0,0,height/2]) union(){
