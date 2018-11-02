@@ -16,7 +16,7 @@ use <effectors.scad>
 //Uses 6 measurements (rostock_holed1, rostock_holed2, rostock_sup_R rostock_platform_w1, rostock_platform_pivot_r and rostock_platform_pivot_R) reverse engineered from the cad files for the Rostock MAX Delta 3D printer from by SeeMeCNC distributed under GPL.
 
 
-assembled = false;				// for normal render mode set false - to see assembled with metal parts set true
+assembled = true;				// for normal render mode set false - to see assembled with metal parts set true
 metalPartsOnly = false;			// render hotend and coldend only (for subtractive purposes) NB. All coldend sirfaces are added with the tolerance.
 ziptie_enable = true;			// holes for zip-tie mounting of the coldends
 blower_enable = false;			// Experimental: optional 5015S blower fan for cooling extruded material (optimal positioning still untested)
@@ -130,9 +130,9 @@ if (metalPartsOnly == false) {
     spar_height = fan_pos-coldend_offset-flange_h;
     spar_length = 57;
     spar_width = 6;
-    spar_angle = 33;
+    spar_angle = 7;
     
-    bar_drop = 41;
+    bar_drop = 19;
     
 	main();
     rotate([0,0,90]) difference(){
@@ -140,7 +140,7 @@ if (metalPartsOnly == false) {
             for(i=[0:120:359]) rotate([0,0,i]) {
                 hull() for(j=[0:1]) {
                     mirror([j,0,0]) rotate([0,0,240*j]) arm_mount_outer(solid=1, height=10, inset=bar_drop, rounding=10);
-                    rotate([0,0,-90-30]) translate([0,-spar_width,0]) rotate([spar_angle,0,0]) translate([-spar_width/3,spar_length,-spar_height*.333]) rotate([-spar_angle*0,0,0]) cube([spar_width*2/3,spar_width,spar_height*1]);
+                    rotate([0,0,-90-30]) translate([0,-spar_width,0]) rotate([spar_angle,0,0]) translate([-spar_width/3,spar_length,-spar_height*.5]) rotate([-spar_angle*0,0,0]) cube([spar_width*2/3,spar_width,spar_height*1]);
                 }
                 
                 //draw in the bars
@@ -149,10 +149,12 @@ if (metalPartsOnly == false) {
             
             for(i=[0:120:359]) rotate([0,0,i]) hull() {
                 rotate([0,0,-90-30]) rotate([spar_angle,0,0]) translate([-spar_width/2,0,0]) cube([spar_width,spar_length,spar_height]);
-                rotate([0,0,-90-30]) translate([0,-spar_width,0]) rotate([spar_angle,0,0]) translate([-spar_width/2,spar_length,0]) rotate([-spar_angle,0,0]) cube([spar_width,spar_width,spar_height]);
+                *rotate([0,0,-90-30]) translate([0,-spar_width,0]) rotate([spar_angle,0,0]) translate([-spar_width/2,spar_length,-spar_height/4]) rotate([-spar_angle,0,0]) cube([spar_width,spar_width,spar_height]);
                 
                 //beef up the bar a bit
-                rotate([0,0,-90-30]) translate([0,radius_up+7,0]) rotate([spar_angle*2,0,0]) translate([-spar_width/6,0,0]) cube([spar_width/3,spar_length/2,spar_height]);
+                *rotate([0,0,-90-30]) translate([0,radius_up+7,0]) rotate([spar_angle*2,0,0]) translate([-spar_width/6,0,0]) cube([spar_width/3,spar_length/2,spar_height]);
+                
+                rotate([0,0,-90-30]) translate([0,-spar_width,0]) rotate([spar_angle,0,0]) translate([-spar_width/3,spar_length,-spar_height*.5]) rotate([-spar_angle*0,0,0]) cube([spar_width*2/3,spar_width,spar_height*1]);
             }
         }
         
@@ -166,7 +168,7 @@ if (metalPartsOnly == false) {
                 cap_cylinder(r=m3_rad+slop, h=15, center=true);
                 translate([0,0,2]) hull(){
                     rotate([0,0,30]) cylinder(r1=m3_nut_rad, r2=m3_nut_rad+.5, h=m3_nut_height+.5, $fn=6);
-                    translate([0,10,0]) rotate([0,0,30]) cylinder(r1=m3_nut_rad, r2=m3_nut_rad+.5, h=m3_nut_height+.5, $fn=6);
+                    translate([0,25,0]) rotate([0,0,30]) cylinder(r1=m3_nut_rad, r2=m3_nut_rad+.5, h=m3_nut_height+.5, $fn=6);
                 }
             }
         }
