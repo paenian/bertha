@@ -120,6 +120,43 @@ rostock_platform_theta=asin((rostock_platform_w1/2+rostock_platform_r)/(rostock_
 rostock_platform_w2=rostock_platform_D1*sin(rostock_platform_theta);
 rostock_platform_R2=cos(rostock_platform_theta)*(rostock_platform_D1/2+rostock_platform_r);
 
+!ir_holder();
+
+module ir_holder(){
+    hole_sep = 21.11-2.70;
+    hole_rad = 1.8;
+    wall = 2;
+    drop = 7;
+    slot = 25;
+    
+    difference(){
+        union(){
+            //ir mount
+            for(i=[0:1]) mirror([i,0,0]) translate([hole_sep/2,0,0]) hull(){
+                cylinder(r=hole_rad+wall, h=wall);
+                translate([0,drop,0]) cylinder(r=hole_rad+wall, h=wall);
+            }
+            
+            //join the mount legs
+            for(i=[0:1]) mirror([i,0,0]) translate([hole_sep/2,0,0]) hull(){
+                translate([-hole_sep/2,drop*2,0]) cylinder(r=hole_rad+wall, h=wall*2);
+                translate([0,drop,0]) cylinder(r=hole_rad+wall, h=wall);
+            }
+            
+            //slot
+            hull() for(i=[0:1]) translate([0,drop*2+i*slot,0]) {
+                cylinder(r=hole_rad+wall, h=wall*2);
+            }
+        }
+        
+        for(i=[0:1]) mirror([i,0,0]) translate([hole_sep/2,0,0])
+            cylinder(r=hole_rad, h=wall*3, center=true);
+        
+        hull() for(i=[0:1]) translate([0,drop*2+i*slot,0]) {
+                cylinder(r=hole_rad, h=wall*7, center=true);
+            }
+    }
+}
 
 
 if (metalPartsOnly == false) {
